@@ -1,29 +1,30 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "pulseflux",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "Pulse Flux",
+  "description": "TODO",
   "authors": [
-    "Me!"
+    "Immortal Devs - parent organization",
+    "Azazelthedemonlord - lead designer"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/aether",
+    "sources": "https://github.com/devs-immortal/PulseFlux",
+    "issues": "https://github.com/devs-immortal/PulseFlux/issues"
   },
-
-  "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
+  "license": "MIT",
+  "icon": "assets/pulseflux/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.fabricmc.example.ExampleMod"
+      "net.id.pulseflux.PulseFlux"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "pulseflux.mixins.json"
   ],
 
   "depends": {
@@ -34,5 +35,12 @@
   },
   "suggests": {
     "another-mod": "*"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/vAa35wQ2ZP"
+      }
+    }
   }
 }
