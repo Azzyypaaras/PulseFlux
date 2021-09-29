@@ -19,6 +19,9 @@ repositories {
 		url = "https://maven.shedaniel.me/"
 	}
 	maven {
+		url = uri("https://storage.googleapis.com/devan-maven/")
+	}
+	maven {
 		url = "https://jitpack.io"
 	}
 }
@@ -33,6 +36,7 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	modImplementation include("com.github.devs-immortal:Incubus-Core:${project.incubus_version}")
+	modImplementation("net.devtech:arrp:${project.arrp_version}")
 
 	// Dev env only
 	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
