@@ -1,6 +1,6 @@
 package net.id.pulseflux.client.render;
 
-import net.id.pulseflux.logistics.IoProvider;
+import net.id.pulseflux.systems.IoProvider;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -9,7 +9,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3f;
 
-import static net.id.pulseflux.logistics.IoProvider.Type.*;
+import static net.id.pulseflux.systems.IoProvider.Type.*;
 import static net.id.incubus_core.render.RenderHelper.*;
 
 public class IoRenderer<E extends BlockEntity & IoProvider> implements BlockEntityRenderer<E> {

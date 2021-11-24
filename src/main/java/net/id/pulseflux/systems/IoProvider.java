@@ -1,8 +1,8 @@
-package net.id.pulseflux.logistics;
+package net.id.pulseflux.systems;
 
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
-import net.id.incubus_core.systems.Polarity;
-import net.id.incubus_core.systems.PulseIo;
+import net.id.pulseflux.systems.Polarity;
+import net.id.pulseflux.systems.PulseIo;
 import net.id.incubus_core.systems.Simulation;
 import net.id.pulseflux.util.ColorHelper;
 import net.id.pulseflux.util.RelativeObjectData;

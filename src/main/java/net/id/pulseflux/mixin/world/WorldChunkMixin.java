@@ -1,7 +1,7 @@
 package net.id.pulseflux.mixin.world;
 
-import net.id.incubus_core.systems.Polarity;
-import net.id.pulseflux.logistics.IoProvider;
+import net.id.pulseflux.systems.Polarity;
+import net.id.pulseflux.systems.IoProvider;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;

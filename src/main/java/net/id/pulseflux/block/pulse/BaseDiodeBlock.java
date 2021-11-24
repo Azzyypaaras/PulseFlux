@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static net.id.incubus_core.systems.PulseIo.IoType;
+import static net.id.pulseflux.systems.PulseIo.IoType;
 import static net.id.pulseflux.block.property.DirectionalIoProperty.*;
 
 public class BaseDiodeBlock extends PFBlockWithEntity {

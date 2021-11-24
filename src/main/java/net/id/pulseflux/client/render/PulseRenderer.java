@@ -1,8 +1,8 @@
 package net.id.pulseflux.client.render;
 
-import net.id.incubus_core.systems.Polarity;
-import net.id.incubus_core.systems.PulseIo;
-import net.id.pulseflux.logistics.IoProvider;
+import net.id.pulseflux.systems.Polarity;
+import net.id.pulseflux.systems.PulseIo;
+import net.id.pulseflux.systems.IoProvider;
 import net.id.pulseflux.util.ColorHelper;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.render.VertexConsumerProvider;

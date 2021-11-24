@@ -1,7 +1,7 @@
 package net.id.pulseflux.util;
 
 import com.google.common.collect.ImmutableList;
-import net.id.incubus_core.systems.PulseIo;
+import net.id.pulseflux.systems.PulseIo;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static net.id.incubus_core.systems.Lookups.*;
+import static net.id.pulseflux.systems.Lookups.*;
 
 public class LogisticsHelper {
 

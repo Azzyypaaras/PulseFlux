@@ -2,8 +2,8 @@ package net.id.pulseflux.blockentity;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.id.incubus_core.systems.DefaultMaterials;
-import net.id.incubus_core.systems.Lookups;
-import net.id.incubus_core.systems.PulseIo;
+import net.id.pulseflux.systems.Lookups;
+import net.id.pulseflux.systems.PulseIo;
 import net.id.incubus_core.util.RegistryQueue;
 import net.id.pulseflux.registry.PulseFluxRegistryQueues;
 import net.minecraft.block.Block;

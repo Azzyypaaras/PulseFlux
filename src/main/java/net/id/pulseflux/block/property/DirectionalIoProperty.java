@@ -1,7 +1,7 @@
 package net.id.pulseflux.block.property;
 
 import com.google.common.collect.ImmutableMap;
-import net.id.incubus_core.systems.PulseIo;
+import net.id.pulseflux.systems.PulseIo;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.math.Direction;
 

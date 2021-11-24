@@ -1,15 +1,12 @@
 package net.id.pulseflux.blockentity;
 
 import com.google.common.collect.ImmutableList;
-import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.id.incubus_core.systems.Material;
-import net.id.incubus_core.systems.Polarity;
-import net.id.incubus_core.systems.PulseIo;
-import net.id.incubus_core.systems.Simulation;
+import net.id.pulseflux.systems.PulseIo;
 import net.id.pulseflux.block.property.DirectionalIoProperty;
 import net.id.pulseflux.block.pulse.BaseDiodeBlock;
-import net.id.pulseflux.logistics.IoProvider;
+import net.id.pulseflux.systems.IoProvider;
 import net.id.pulseflux.util.LogisticsHelper;
 import net.id.pulseflux.util.RelativeObjectData;
 import net.minecraft.block.BlockState;

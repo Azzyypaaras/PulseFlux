@@ -2,8 +2,8 @@ package net.id.pulseflux.blockentity;
 
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.id.incubus_core.systems.Material;
-import net.id.incubus_core.systems.Polarity;
-import net.id.incubus_core.systems.PulseIo;
+import net.id.pulseflux.systems.Polarity;
+import net.id.pulseflux.systems.PulseIo;
 import net.id.incubus_core.systems.Simulation;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;

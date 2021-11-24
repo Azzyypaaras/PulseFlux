@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-import static net.id.incubus_core.systems.PulseIo.IoType;
+import static net.id.pulseflux.systems.PulseIo.IoType;
 import static net.id.pulseflux.block.property.DirectionalIoProperty.*;
 
 
