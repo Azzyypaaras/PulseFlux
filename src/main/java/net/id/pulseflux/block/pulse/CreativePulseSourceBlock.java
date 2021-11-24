@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import net.id.incubus_core.systems.DefaultMaterials;
 import net.id.pulseflux.block.PFBlockWithEntity;
 import net.id.pulseflux.blockentity.BaseDiodeEntity;
+import net.id.pulseflux.blockentity.CreativePulseSourceEntity;
 import net.id.pulseflux.blockentity.PFBlockEntity;
 import net.id.pulseflux.util.LogisticsHelper;
 import net.id.pulseflux.util.RelativeObjectData;
@@ -14,21 +15,21 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Optional;
 
 import static net.id.incubus_core.systems.PulseIo.IoType;
 import static net.id.pulseflux.block.property.DirectionalIoProperty.*;
 
-public class BaseDiodeBlock extends PFBlockWithEntity {
 
-    public BaseDiodeBlock(Settings settings) {
+public class CreativePulseSourceBlock extends PFBlockWithEntity {
+
+    public CreativePulseSourceBlock(Settings settings) {
         super(settings, true);
         IO_PROPERTIES.values().forEach(property -> setDefaultState(getDefaultState().with(property, IoType.NONE)));
     }
@@ -45,17 +46,6 @@ public class BaseDiodeBlock extends PFBlockWithEntity {
         if(state != null) {
             var facingDir = ctx.getPlayerLookDirection().getOpposite();
             state = state.with(IO_PROPERTIES.get(facingDir), IoType.OUTPUT);
-
-            var searchDirs = new ArrayList<>(Arrays.asList(Direction.values()));
-            searchDirs.remove(facingDir.getOpposite());
-            searchDirs.add(0, facingDir.getOpposite());
-
-            var input = LogisticsHelper.seekPulseIo(IoType.OUTPUT, ctx.getWorld(), ctx.getBlockPos(), searchDirs)
-                    .map(RelativeObjectData::direction)
-                    .filter(direction -> direction != facingDir)
-                    .orElse(facingDir.getOpposite());
-
-            state = state.with(IO_PROPERTIES.get(input), IoType.INPUT);
         }
         return state;
     }
@@ -71,7 +61,7 @@ public class BaseDiodeBlock extends PFBlockWithEntity {
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new BaseDiodeEntity(DefaultMaterials.IRON, pos, state);
+        return new CreativePulseSourceEntity(pos, state);
     }
 
     @Override

@@ -37,6 +37,8 @@ public class PulseFluxItems {
 
     public static final BlockItem WORKSHOP_DIODE = add("workshop_diode", PulseFluxBlocks.WORKSHOP_DIODE, logistics);
 
+    public static final BlockItem CREATIVE_PULSE_SOURCE = add("creative_pulse_source", PulseFluxBlocks.CREATIVE_PULSE_SOURCE, logistics);
+
 
 
     /**

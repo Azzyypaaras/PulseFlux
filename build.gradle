@@ -22,6 +22,14 @@ repositories {
 		url = uri("https://storage.googleapis.com/devan-maven/")
 	}
 	maven {
+		name = 'Ladysnake Mods'
+		url = 'https://ladysnake.jfrog.io/artifactory/mods'
+	}
+	maven {
+		url 'https://storage.googleapis.com/devan-maven/'
+	}
+
+	maven {
 		url = "https://jitpack.io"
 	}
 }
@@ -36,7 +44,10 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	modImplementation include("com.github.devs-immortal:Incubus-Core:${project.incubus_version}")
+	modImplementation include("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cardinal_version}")
+	modImplementation include("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cardinal_version}")
 	modImplementation("net.devtech:arrp:${project.arrp_version}")
+	//modImplementation("io.github.astrarre:astrarre-gui-v0-fabric:${project.astrarre_gui_version}")
 
 	// Dev env only
 	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"

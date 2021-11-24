@@ -18,7 +18,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class PFBlock extends BlockWithEntity implements Waterloggable {
+public abstract class PFBlock extends Block implements Waterloggable {
 
     public static final BooleanProperty POWERED = Properties.POWERED;
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
@@ -86,12 +86,6 @@ public abstract class PFBlock extends BlockWithEntity implements Waterloggable {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(POWERED, WATERLOGGED);
-    }
-
-    @Nullable
-    public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-        return blockEntity instanceof NamedScreenHandlerFactory ? (NamedScreenHandlerFactory)blockEntity : null;
+        builder.add(WATERLOGGED, POWERED);
     }
 }

@@ -21,6 +21,9 @@
   "entrypoints": {
     "main": [
       "net.id.pulseflux.PulseFlux"
+    ],
+    "client": [
+      "net.id.pulseflux.PulseFlux"
     ]
   },
   "mixins": [
@@ -37,6 +40,9 @@
     "another-mod": "*"
   },
   "custom": {
+    "cardinal-components": [
+      "pulseflux:network_manager"
+    ],
     "modmenu": {
       "links": {
         "modmenu.discord": "https://discord.gg/vAa35wQ2ZP"

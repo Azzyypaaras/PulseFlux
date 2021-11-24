@@ -1,0 +1,22 @@
+{
+	"credit": "Made by Azazelthedemonlord",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "#output",
+		"particle": "#output"
+	},
+	"elements": [
+		{
+			"from": [3, 3, 0],
+			"to": [13, 13, 2],
+			"faces": {
+				"north": {"uv": [1.5, 9.5, 6.5, 14.5], "texture": "#0"},
+				"east": {"uv": [1.5, 1.5, 2.5, 6.5], "texture": "#0"},
+				"south": {"uv": [1.5, 1.5, 6.5, 6.5], "texture": "#0"},
+				"west": {"uv": [5.5, 1.5, 6.5, 6.5], "texture": "#0"},
+				"up": {"uv": [1.5, 1.5, 6.5, 2.5], "texture": "#0"},
+				"down": {"uv": [1.5, 5.5, 6.5, 6.5], "texture": "#0"}
+			}
+		}
+	]
+}

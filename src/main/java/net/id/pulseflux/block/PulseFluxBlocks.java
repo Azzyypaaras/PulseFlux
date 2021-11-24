@@ -3,6 +3,7 @@ package net.id.pulseflux.block;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.id.incubus_core.util.RegistryQueue;
 import net.id.pulseflux.block.pulse.BaseDiodeBlock;
+import net.id.pulseflux.block.pulse.CreativePulseSourceBlock;
 import net.id.pulseflux.registry.PulseFluxRegistryQueues;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -23,7 +24,11 @@ public class PulseFluxBlocks {
      * LOGISTICS
      */
 
-    public static final BaseDiodeBlock WORKSHOP_DIODE = add("workshop_diode", new BaseDiodeBlock(FabricBlockSettings.copy(Blocks.IRON_BLOCK)), generateLocale("Workshop Diode"));
+    private static final RegistryQueue.Action<Block> generateDiodeAssets = (id, block) -> createDiodeAssets(id);
+
+    public static final BaseDiodeBlock WORKSHOP_DIODE = add("workshop_diode", new BaseDiodeBlock(FabricBlockSettings.copy(Blocks.IRON_BLOCK)), generateDiodeAssets, generateLocale("Workshop Diode"));
+
+    public static final CreativePulseSourceBlock CREATIVE_PULSE_SOURCE = add("creative_pulse_source", new CreativePulseSourceBlock(FabricBlockSettings.copy(Blocks.NETHERITE_BLOCK)), generateDiodeAssets, generateLocale("Creative Pulse Source"));
 
 
 
