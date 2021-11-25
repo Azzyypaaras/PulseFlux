@@ -30,7 +30,7 @@ public class CreativePulseSourceEntity extends PulseBlockEntity implements IoPro
     }
 
     @Override
-    boolean initialize(World world, BlockPos pos, BlockState state) {
+    protected boolean initialize(World world, BlockPos pos, BlockState state) {
         child = getIoDir(state, IoType.OUTPUT).flatMap(dir -> LogisticsHelper.seekPulseIo(IoType.INPUT, world, pos, dir));
         frequency = 100;
         inductance = 100;
@@ -39,7 +39,7 @@ public class CreativePulseSourceEntity extends PulseBlockEntity implements IoPro
     }
 
     @Override
-    void tick(BlockPos pos, BlockState state) {
+    protected void tick(BlockPos pos, BlockState state) {
         if(renderTicks < getMaxRenderProgress())
             renderTicks++;
 

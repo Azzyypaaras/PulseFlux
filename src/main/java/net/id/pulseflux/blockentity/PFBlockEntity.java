@@ -18,7 +18,7 @@ public abstract class PFBlockEntity extends BlockEntity implements BlockEntityCl
     public PFBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int tickSpacing) {
         super(type, pos, state);
         this.tickSpacing = tickSpacing;
-        this.tickOffset = PulseFlux.random.nextInt(tickSpacing);
+        this.tickOffset = tickSpacing > 1 ? PulseFlux.random.nextInt(tickSpacing) : 0;
     }
 
     public PFBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -38,7 +38,7 @@ public abstract class PFBlockEntity extends BlockEntity implements BlockEntityCl
         }
     }
 
-    abstract void tick(BlockPos pos, BlockState state);
+    protected abstract void tick(BlockPos pos, BlockState state);
 
     public void tickServer(BlockPos pos, BlockState state) {}
 
@@ -46,7 +46,7 @@ public abstract class PFBlockEntity extends BlockEntity implements BlockEntityCl
         return tickSpacing == 0 || (world.getTime() + tickOffset) % tickSpacing == 0;
     }
 
-    abstract boolean initialize(World world, BlockPos pos, BlockState state);
+    protected abstract boolean initialize(World world, BlockPos pos, BlockState state);
 
     public boolean hasInitialized() {
         return initialized;

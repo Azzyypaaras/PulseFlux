@@ -33,13 +33,13 @@ public class BaseDiodeEntity extends PulseBlockEntity implements IoProvider {
     }
 
     @Override
-    boolean initialize(World world, BlockPos pos, BlockState state) {
+    protected boolean initialize(World world, BlockPos pos, BlockState state) {
         child = getIoDir(state, IoType.OUTPUT).flatMap(dir -> LogisticsHelper.seekPulseIo(IoType.INPUT, world, pos, dir));
         return true;
     }
 
     @Override
-    void tick(BlockPos pos, BlockState state) {
+    protected void tick(BlockPos pos, BlockState state) {
         if(renderTicks < getMaxRenderProgress())
             renderTicks++;
 
