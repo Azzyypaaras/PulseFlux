@@ -3,7 +3,6 @@ package net.id.pulseflux.network;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.id.pulseflux.PulseFlux;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.level.LevelProperties;
@@ -17,7 +16,7 @@ import static net.id.pulseflux.PulseFluxComponents.*;
 public class NetworkManager implements AutoSyncedComponent, ServerTickingComponent {
 
     public final World world;
-    public final Object2ObjectOpenHashMap<UUID, LogisticNetwork<?>> managedNetworks = new Object2ObjectOpenHashMap<>(32);
+    public final Object2ObjectOpenHashMap<UUID, TransferNetwork<?>> managedNetworks = new Object2ObjectOpenHashMap<>(32);
 
     public NetworkManager(World world) {
         this.world = world;

@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 
 public abstract class PFBlockEntity extends BlockEntity implements BlockEntityClientSerializable {
 
-    private boolean initialized;
+    protected boolean initialized;
     private final int tickSpacing, tickOffset;
 
     public PFBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int tickSpacing) {

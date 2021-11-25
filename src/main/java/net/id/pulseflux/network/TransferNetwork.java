@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public abstract class LogisticNetwork<T extends LogisticNetwork<?>> {
+public abstract class TransferNetwork<T extends TransferNetwork<?>> {
 
     public final UUID networkId;
     public final Predicate<BlockState> componentValidator;
@@ -25,7 +25,7 @@ public abstract class LogisticNetwork<T extends LogisticNetwork<?>> {
     private boolean revalidationRequestTick;
 
 
-    public LogisticNetwork(World world, UUID networkId, Predicate<BlockState> componentValidator) {
+    public TransferNetwork(World world, UUID networkId, Predicate<BlockState> componentValidator) {
         this.world = world;
         this.networkId = networkId;
         this.componentValidator = componentValidator;
@@ -33,7 +33,7 @@ public abstract class LogisticNetwork<T extends LogisticNetwork<?>> {
         this.components = new ArrayList<>();
     }
 
-    public LogisticNetwork(World world, NbtCompound nbt, Predicate<BlockState> componentValidator) {
+    public TransferNetwork(World world, NbtCompound nbt, Predicate<BlockState> componentValidator) {
         this.world = world;
         this.componentValidator = componentValidator;
         this.networkId = nbt.getUuid("networkId");
