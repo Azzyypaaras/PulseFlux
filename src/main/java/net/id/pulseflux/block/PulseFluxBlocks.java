@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.id.incubus_core.util.RegistryQueue;
 import net.id.pulseflux.block.pulse.BaseDiodeBlock;
 import net.id.pulseflux.block.pulse.CreativePulseSourceBlock;
+import net.id.pulseflux.block.transport.PipeBlock;
 import net.id.pulseflux.registry.PulseFluxRegistryQueues;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -30,7 +31,7 @@ public class PulseFluxBlocks {
 
     public static final CreativePulseSourceBlock CREATIVE_PULSE_SOURCE = add("creative_pulse_source", new CreativePulseSourceBlock(FabricBlockSettings.copy(Blocks.NETHERITE_BLOCK)), generateDiodeAssets, generateLocale("Creative Pulse Source"));
 
-
+    public static final PipeBlock FLUID_PIPE = add("fluid_pipe", new PipeBlock(FabricBlockSettings.copy(Blocks.IRON_BLOCK)), generateLocale("Fluid Pipe"));
 
     /**
      * RESOURCES

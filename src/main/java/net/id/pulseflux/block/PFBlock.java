@@ -49,7 +49,7 @@ public abstract class PFBlock extends Block implements Waterloggable {
 
     @Override
     public boolean canFillWithFluid(BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
-        return loggable && !(Boolean)state.get(Properties.WATERLOGGED) && fluid == Fluids.WATER;
+        return loggable && !(Boolean) state.get(Properties.WATERLOGGED) && fluid == Fluids.WATER;
     }
 
     @Override
@@ -62,7 +62,8 @@ public abstract class PFBlock extends Block implements Waterloggable {
         super.neighborUpdate(state, world, pos, block, fromPos, notify);
     }
 
-    protected void pulseUpdate(BlockState state, World world, BlockPos pos, boolean on) {}
+    protected void pulseUpdate(BlockState state, World world, BlockPos pos, boolean on) {
+    }
 
     @Override
     public boolean hasComparatorOutput(BlockState state) {
