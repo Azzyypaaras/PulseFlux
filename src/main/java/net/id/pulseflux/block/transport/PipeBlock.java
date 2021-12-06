@@ -7,13 +7,18 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,9 +27,11 @@ import java.util.Map;
 
 public abstract class PipeBlock extends LogisticComponentBlock {
 
-    public static final EnumProperty<Direction.Axis> LINEAR_AXIS = EnumProperty.of("linear_axis", Direction.Axis.class);
-    public static final Map<Direction, BooleanProperty> CONNECTIONS;
+    public static final EnumProperty<Direction.Axis> LINEAR_AXIS = Properties.AXIS;
     public static final BooleanProperty STRAIGHT = BooleanProperty.of("straight");
+    public static final Map<Direction, BooleanProperty> CONNECTIONS;
+    public static final Map<Direction, VoxelShape> SHAPES;
+    public static final VoxelShape HEART = Block.createCuboidShape(5, 5, 5, 11, 11 ,11);
 
     public final BlockApiLookup<? extends Storage<?>, Direction> lookup;
 
@@ -38,6 +45,18 @@ public abstract class PipeBlock extends LogisticComponentBlock {
         defaultState = defaultState.with(CONNECTIONS.get(Direction.NORTH), true).with(CONNECTIONS.get(Direction.SOUTH), true);
         defaultState = defaultState.with(LINEAR_AXIS, Direction.Axis.Z);
         setDefaultState(defaultState);
+    }
+
+    @Override
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        var shape = HEART;
+
+        for (Direction direction : Direction.values()) {
+            if(state.get(CONNECTIONS.get(direction)))
+                shape = VoxelShapes.union(shape, SHAPES.get(direction));
+        }
+
+        return shape;
     }
 
     @Override
@@ -61,6 +80,10 @@ public abstract class PipeBlock extends LogisticComponentBlock {
                 if(lookupResult.supportsInsertion() || lookupResult.supportsExtraction()) {
                     state = state.with(LINEAR_AXIS, clickDirection.getAxis());
                 }
+            }
+
+            for (Direction dir : Direction.values()) {
+                state = state.with(CONNECTIONS.get(dir), dir.getAxis() == clickDirection.getAxis());
             }
         }
         return state;
@@ -143,6 +166,15 @@ public abstract class PipeBlock extends LogisticComponentBlock {
                 .put(Direction.WEST, BooleanProperty.of("west"))
                 .put(Direction.UP, BooleanProperty.of("up"))
                 .put(Direction.DOWN, BooleanProperty.of("down"))
+                .build();
+        //noinspection unchecked
+        SHAPES = (Map<Direction, VoxelShape>) (Object) ImmutableMap.builder()
+                .put(Direction.NORTH, Block.createCuboidShape(0, 5, 5, 5, 11 ,11))
+                .put(Direction.EAST, Block.createCuboidShape(11, 5, 5, 11, 11 ,16))
+                .put(Direction.SOUTH, Block.createCuboidShape(11, 5, 5, 16, 11 ,11))
+                .put(Direction.WEST, Block.createCuboidShape(5, 5, 0, 11, 11 ,5))
+                .put(Direction.UP, Block.createCuboidShape(5, 11, 5, 11, 16 ,11))
+                .put(Direction.DOWN, Block.createCuboidShape(5, 0, 5, 11, 5 ,11))
                 .build();
     }
 }

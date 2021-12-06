@@ -10,6 +10,7 @@ import net.id.pulseflux.registry.PulseFluxRegistryQueues;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 
+import static net.id.pulseflux.block.PFBlockActions.*;
 import static net.id.pulseflux.PulseFlux.locate;
 import static net.id.pulseflux.arrp.PulseFluxResources.*;
 import static net.id.pulseflux.arrp.AssetGen.*;
@@ -38,7 +39,7 @@ public class PulseFluxBlocks {
 
     private static final RegistryQueue.Action<Block> generatePipeAssets = (id, block) -> createPipeAssets(id);
 
-    public static final PipeBlock WOODEN_FLUID_PIPE = add("wooden_fluid_pipe", new FluidPipeBlock(FabricBlockSettings.copyOf(Blocks.OAK_LOG)), generatePipeAssets, generateLocale("Wooden Pipe"));
+    public static final PipeBlock WOODEN_FLUID_PIPE = add("wooden_fluid_pipe", new FluidPipeBlock(FabricBlockSettings.copyOf(Blocks.OAK_LOG)), translucentRenderLayer, generatePipeAssets, generateLocale("Wooden Pipe"));
 
     /**
      * RESOURCES

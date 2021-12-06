@@ -16,6 +16,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.SplittableRandom;
 
+import static net.id.pulseflux.arrp.PulseFluxResources.PACK;
+
 public class PulseFlux implements ModInitializer, ClientModInitializer {
 
 	public static final String MOD_ID = "pulseflux";

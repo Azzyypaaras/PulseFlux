@@ -4,6 +4,8 @@
   "package": "net.id.pulseflux.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "arrp.JWhenMixin",
+    "arrp.JWhenSerializerMixin",
     "world.WorldChunkMixin"
   ],
   "client": [
