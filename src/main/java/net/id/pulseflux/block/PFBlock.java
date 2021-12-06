@@ -20,13 +20,12 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class PFBlock extends Block implements Waterloggable {
 
-    public static final BooleanProperty POWERED = Properties.POWERED;
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     public final boolean loggable;
 
     public PFBlock(Settings settings, boolean loggable) {
         super(settings);
-        setDefaultState(getDefaultState().with(POWERED, false).with(WATERLOGGED, false));
+        setDefaultState(getDefaultState().with(WATERLOGGED, false));
         this.loggable = loggable;
     }
 
@@ -53,18 +52,6 @@ public abstract class PFBlock extends Block implements Waterloggable {
     }
 
     @Override
-    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
-        boolean powered = world.isReceivingRedstonePower(pos);
-        if (powered != state.get(POWERED)) {
-            world.setBlockState(pos, state.with(POWERED, powered), 3);
-            pulseUpdate(state, world, pos, powered);
-        }
-        super.neighborUpdate(state, world, pos, block, fromPos, notify);
-    }
-
-    protected void pulseUpdate(BlockState state, World world, BlockPos pos, boolean on) {}
-
-    @Override
     public boolean hasComparatorOutput(BlockState state) {
         return true;
     }
@@ -86,6 +73,6 @@ public abstract class PFBlock extends Block implements Waterloggable {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(WATERLOGGED, POWERED);
+        builder.add(WATERLOGGED);
     }
 }

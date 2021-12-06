@@ -10,7 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class PFBlockWithEntity extends PFBlock implements BlockEntityProvider {
+public abstract class PFBlockWithEntity extends PFRedstoneBlock implements BlockEntityProvider {
 
     public PFBlockWithEntity(Settings settings, boolean loggable) {
         super(settings, loggable);

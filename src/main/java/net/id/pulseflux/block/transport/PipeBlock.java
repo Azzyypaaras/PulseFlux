@@ -3,10 +3,13 @@ package net.id.pulseflux.block.transport;
 import com.google.common.collect.ImmutableMap;
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.math.BlockPos;
@@ -14,6 +17,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public abstract class PipeBlock extends LogisticComponentBlock {
@@ -46,18 +50,23 @@ public abstract class PipeBlock extends LogisticComponentBlock {
         var offBlock = world.getBlockState(offPos);
         var lookupResult = lookup.find(world, offPos, clickDirection.getOpposite());
 
-        if(offBlock.getBlock() instanceof PipeBlock pipe && pipe.lookup == lookup) {
+        var state = super.getPlacementState(ctx);
 
-        }
-        else if(lookupResult instanceof Storage<?> storage) {
-            if(storage.supportsInsertion() || storage.supportsExtraction()) {
-
+        if(state != null) {
+            if(offBlock.getBlock() instanceof PipeBlock pipe && pipe.lookup == lookup) {
+                notifyConnectionAttempt(world, offBlock, offPos, clickDirection.getOpposite());
+                state = state.with(LINEAR_AXIS, clickDirection.getAxis());
+            }
+            else if(lookupResult != null) {
+                if(lookupResult.supportsInsertion() || lookupResult.supportsExtraction()) {
+                    state = state.with(LINEAR_AXIS, clickDirection.getAxis());
+                }
             }
         }
-        return super.getPlacementState(ctx);
+        return state;
     }
 
-    public boolean notifyConnectionAttempt(World world, BlockState state, BlockPos pos, Direction direction) {
+    public void notifyConnectionAttempt(World world, BlockState state, BlockPos pos, Direction direction) {
         if(state.get(STRAIGHT)) {
 
             var linearAxis = state.get(LINEAR_AXIS);
@@ -75,13 +84,32 @@ public abstract class PipeBlock extends LogisticComponentBlock {
                     }
                 }
 
-                state = state.with(CONNECTIONS.get(direction), true);
+                state = state.with(CONNECTIONS.get(direction), true).with(STRAIGHT, false);
                 world.setBlockState(pos, state, Block.NOTIFY_ALL);
-
-                return true;
             }
         }
+        else {
 
+            var changedDirs = new ArrayList<Direction>();
+
+            for (Direction dir : Direction.values()) {
+                var offPos = pos.offset(dir);
+                var offState = world.getBlockState(offPos);
+                if(!canConnectTo(world, offState, pos, dir)) {
+                    state = state.with(CONNECTIONS.get(dir), false);
+                }
+                else if(dir != direction) {
+                    changedDirs.add(dir);
+                }
+            }
+
+            if(changedDirs.size() == 1) {
+                state = state.with(STRAIGHT, true).with(LINEAR_AXIS, direction.getAxis());
+            }
+
+            state = state.with(CONNECTIONS.get(direction), true);
+            world.setBlockState(pos, state, Block.NOTIFY_ALL);
+        }
     }
 
     public boolean canConnectTo(World world, BlockState state, BlockPos pos, Direction direction) {
@@ -95,6 +123,15 @@ public abstract class PipeBlock extends LogisticComponentBlock {
     @Override
     public boolean isConnectedToComponent(World world, BlockPos pos, Direction direction) {
         return super.isConnectedToComponent(world, pos, direction);
+    }
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        super.appendProperties(builder);
+        builder.add(LINEAR_AXIS, STRAIGHT);
+        for (Direction dir : Direction.values()) {
+            builder.add(CONNECTIONS.get(dir));
+        }
     }
 
     static {

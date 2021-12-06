@@ -4,6 +4,8 @@ import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.id.incubus_core.util.RegistryQueue;
 import net.id.pulseflux.block.pulse.BaseDiodeBlock;
 import net.id.pulseflux.block.pulse.CreativePulseSourceBlock;
+import net.id.pulseflux.block.transport.FluidPipeBlock;
+import net.id.pulseflux.block.transport.PipeBlock;
 import net.id.pulseflux.registry.PulseFluxRegistryQueues;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -21,7 +23,7 @@ public class PulseFluxBlocks {
     private static final RegistryQueue.Action<Block> generateAssets = (id, block) -> createBlockAssets(id);
 
     /**
-     * LOGISTICS
+     * POWER
      */
 
     private static final RegistryQueue.Action<Block> generateDiodeAssets = (id, block) -> createDiodeAssets(id);
@@ -30,7 +32,13 @@ public class PulseFluxBlocks {
 
     public static final CreativePulseSourceBlock CREATIVE_PULSE_SOURCE = add("creative_pulse_source", new CreativePulseSourceBlock(FabricBlockSettings.copy(Blocks.NETHERITE_BLOCK)), generateDiodeAssets, generateLocale("Creative Pulse Source"));
 
+    /**
+     * LOGISTICS
+     */
 
+    private static final RegistryQueue.Action<Block> generatePipeAssets = (id, block) -> createPipeAssets(id);
+
+    public static final PipeBlock WOODEN_FLUID_PIPE = add("wooden_fluid_pipe", new FluidPipeBlock(FabricBlockSettings.copyOf(Blocks.OAK_LOG)), generatePipeAssets, generateLocale("Wooden Pipe"));
 
     /**
      * RESOURCES

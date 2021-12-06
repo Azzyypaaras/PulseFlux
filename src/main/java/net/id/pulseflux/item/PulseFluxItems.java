@@ -39,6 +39,7 @@ public class PulseFluxItems {
 
     public static final BlockItem CREATIVE_PULSE_SOURCE = add("creative_pulse_source", PulseFluxBlocks.CREATIVE_PULSE_SOURCE, logistics);
 
+    public static final BlockItem WOODEN_FLUID_PIPE = add("wooden_fluid_pipe", PulseFluxBlocks.WOODEN_FLUID_PIPE, logistics);
 
 
     /**
