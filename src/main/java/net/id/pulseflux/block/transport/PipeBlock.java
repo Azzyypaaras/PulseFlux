@@ -2,14 +2,13 @@ package net.id.pulseflux.block.transport;
 
 import com.google.common.collect.ImmutableMap;
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.fluid.Fluid;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
@@ -42,7 +41,7 @@ public abstract class PipeBlock extends LogisticComponentBlock {
             setDefaultState(getDefaultState().with(CONNECTIONS.get(direction), false));
         }
         var defaultState = getDefaultState();
-        defaultState = defaultState.with(CONNECTIONS.get(Direction.NORTH), true).with(CONNECTIONS.get(Direction.SOUTH), true);
+        //defaultState = defaultState.with(CONNECTIONS.get(Direction.NORTH), true).with(CONNECTIONS.get(Direction.SOUTH), true);
         defaultState = defaultState.with(LINEAR_AXIS, Direction.Axis.Z);
         setDefaultState(defaultState);
     }
@@ -71,9 +70,8 @@ public abstract class PipeBlock extends LogisticComponentBlock {
 
         var state = super.getPlacementState(ctx);
 
-        if(state != null) {
+        if(state != null && ctx.canPlace()) {
             if(offBlock.getBlock() instanceof PipeBlock pipe && pipe.lookup == lookup) {
-                notifyConnectionAttempt(world, offBlock, offPos, clickDirection.getOpposite());
                 state = state.with(LINEAR_AXIS, clickDirection.getAxis());
             }
             else if(lookupResult != null) {
@@ -81,12 +79,62 @@ public abstract class PipeBlock extends LogisticComponentBlock {
                     state = state.with(LINEAR_AXIS, clickDirection.getAxis());
                 }
             }
+            else if(!ctx.getPlayer().isSneaking()){
+                var facing = ctx.getPlayerLookDirection();
+                return alignTo(state, facing, true);
+            }
 
-            for (Direction dir : Direction.values()) {
-                state = state.with(CONNECTIONS.get(dir), dir.getAxis() == clickDirection.getAxis());
+            if(ctx.getPlayer().isSneaking()) {
+                int changes = 0;
+                boolean opposite = false;
+
+                for (Direction direction : Direction.values()) {
+                    var checkPos = pos.offset(direction);
+                    var checkBlock = world.getBlockState(checkPos);
+                    if(checkBlock.getBlock() instanceof PipeBlock check && check.lookup == lookup && check.isDirectionOpen(checkBlock, direction.getOpposite())) {
+                        if(direction.getAxis() != clickDirection.getAxis()) {
+                            state = state.with(STRAIGHT, false).with(CONNECTIONS.get(direction), true);
+                            changes++;
+                        }
+                        else if(direction == clickDirection.getOpposite()) {
+                            opposite = true;
+                        }
+                    }
+                }
+
+                if(changes > 0) {
+                    return alignTo(state, clickDirection, false).with(CONNECTIONS.get(clickDirection.getOpposite()), opposite);
+                }
+            }
+
+            return alignTo(state, clickDirection, true);
+        }
+        return null;
+    }
+
+    @Override
+    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+        for (Direction dir : Direction.values()) {
+            if(state.get(CONNECTIONS.get(dir))) {
+                var offPos = pos.offset(dir);
+                var offBlock = world.getBlockState(offPos);
+                if(offBlock.getBlock() instanceof PipeBlock pipe && pipe.lookup == lookup)
+                    notifyConnectionAttempt(world, offBlock, offPos, dir.getOpposite());
             }
         }
-        return state;
+        super.onPlaced(world, pos, state, placer, itemStack);
+    }
+
+    public static BlockState alignTo(BlockState state, Direction direction, boolean force) {
+        for (Direction dir : Direction.values()) {
+            if(force) {
+                state = state.with(CONNECTIONS.get(dir), dir.getAxis() == direction.getAxis());
+            }
+            else if(dir.getAxis() == direction.getAxis()) {
+                state = state.with(CONNECTIONS.get(dir), true);
+            }
+        }
+        return state.with(LINEAR_AXIS, direction.getAxis());
     }
 
     public void notifyConnectionAttempt(World world, BlockState state, BlockPos pos, Direction direction) {
@@ -126,7 +174,7 @@ public abstract class PipeBlock extends LogisticComponentBlock {
                 }
             }
 
-            if(changedDirs.size() == 1) {
+            if(changedDirs.size() == 1 && changedDirs.get(0).getAxis() == direction.getAxis()) {
                 state = state.with(STRAIGHT, true).with(LINEAR_AXIS, direction.getAxis());
             }
 
@@ -135,9 +183,13 @@ public abstract class PipeBlock extends LogisticComponentBlock {
         }
     }
 
+    public boolean isDirectionOpen(BlockState state, Direction direction) {
+        return state.get(CONNECTIONS.get(direction));
+    }
+
     public boolean canConnectTo(World world, BlockState state, BlockPos pos, Direction direction) {
         if(state.getBlock() instanceof  PipeBlock pipe)
-            return pipe.lookup == lookup;
+            return pipe.lookup == lookup && pipe.isDirectionOpen(state, direction.getOpposite());
 
         var lookupResult = lookup.find(world, pos, direction.getOpposite());
         return lookupResult != null && (lookupResult.supportsExtraction() || lookupResult.supportsInsertion());
@@ -169,12 +221,12 @@ public abstract class PipeBlock extends LogisticComponentBlock {
                 .build();
         //noinspection unchecked
         SHAPES = (Map<Direction, VoxelShape>) (Object) ImmutableMap.builder()
-                .put(Direction.NORTH, Block.createCuboidShape(0, 5, 5, 5, 11 ,11))
-                .put(Direction.EAST, Block.createCuboidShape(11, 5, 5, 11, 11 ,16))
-                .put(Direction.SOUTH, Block.createCuboidShape(11, 5, 5, 16, 11 ,11))
-                .put(Direction.WEST, Block.createCuboidShape(5, 5, 0, 11, 11 ,5))
-                .put(Direction.UP, Block.createCuboidShape(5, 11, 5, 11, 16 ,11))
+                .put(Direction.WEST, Block.createCuboidShape(0, 5, 5, 5, 11 ,11))
+                .put(Direction.EAST, Block.createCuboidShape(11, 5, 5, 16, 11 ,11))
+                .put(Direction.NORTH, Block.createCuboidShape(5, 5, 0, 11, 11 ,5))
+                .put(Direction.SOUTH, Block.createCuboidShape(5, 5, 11, 11, 11 ,16))
                 .put(Direction.DOWN, Block.createCuboidShape(5, 0, 5, 11, 5 ,11))
+                .put(Direction.UP, Block.createCuboidShape(5, 11, 5, 11, 16 ,11))
                 .build();
     }
 }
