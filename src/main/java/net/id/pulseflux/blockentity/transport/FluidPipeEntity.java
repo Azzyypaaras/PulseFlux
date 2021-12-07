@@ -12,6 +12,7 @@ import net.id.pulseflux.blockentity.PFBlockEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -31,5 +32,15 @@ public class FluidPipeEntity extends PFBlockEntity {
 
         initialized = true;
         return true;
+    }
+
+    @Override
+    public void saveClient(NbtCompound nbt) {
+
+    }
+
+    @Override
+    public void loadClient(NbtCompound nbt) {
+
     }
 }

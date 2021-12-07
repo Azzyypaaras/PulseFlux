@@ -61,14 +61,17 @@ public abstract class PipeBlock extends LogisticComponentBlock {
     @Override
     public @Nullable BlockState getPlacementState(ItemPlacementContext ctx) {
         var world = ctx.getWorld();
+        var state = super.getPlacementState(ctx);
+
+        if(world.isClient())
+            return state;
+
         var clickDirection = ctx.getPlacementDirections()[0];
         var pos = ctx.getBlockPos();
 
         var offPos = pos.offset(clickDirection);
         var offBlock = world.getBlockState(offPos);
         var lookupResult = lookup.find(world, offPos, clickDirection.getOpposite());
-
-        var state = super.getPlacementState(ctx);
 
         if(state != null && ctx.canPlace()) {
             if(offBlock.getBlock() instanceof PipeBlock pipe && pipe.lookup == lookup) {

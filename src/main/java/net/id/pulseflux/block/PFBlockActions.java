@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.registry.FlattenableBlockRegistry;
 import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
 import net.fabricmc.fabric.api.registry.TillableBlockRegistry;
 import net.fabricmc.fabric.mixin.lookup.BlockEntityTypeAccessor;
+import net.id.incubus_core.util.RegistryQueue;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractSignBlock;
 import net.minecraft.block.Block;
@@ -16,6 +17,7 @@ import net.minecraft.util.Identifier;
 
 import static net.id.incubus_core.util.RegistryQueue.Action;
 import static net.id.incubus_core.util.RegistryQueue.onClient;
+import static net.id.pulseflux.arrp.AssetGen.*;
 
 class PFBlockActions {
     protected static final AbstractBlock.ContextPredicate never = (state, view, pos) -> false;
@@ -34,4 +36,8 @@ class PFBlockActions {
     protected static final Action<AbstractSignBlock> signBlockEntity = (id, block) -> ((BlockEntityTypeAccessor) BlockEntityType.SIGN).getBlocks().add(block);
 
     protected static Action<Block> strippedFrom(Block original) { return (id, stripped) -> StrippableBlockRegistry.register(original, stripped);}
+
+    public static final RegistryQueue.Action<Block> generateDiodeAssets = (id, block) -> createDiodeAssets(id);
+    public static final RegistryQueue.Action<Block> generateAssets = (id, block) -> createBlockAssets(id);
+    public static final RegistryQueue.Action<Block> generatePipeAssets = (id, block) -> createPipeAssets(id);
 }

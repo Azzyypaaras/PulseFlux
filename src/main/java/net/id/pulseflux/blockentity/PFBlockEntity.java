@@ -1,19 +1,23 @@
 package net.id.pulseflux.blockentity;
 
-import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
+import com.google.common.base.Preconditions;
 import net.id.pulseflux.PulseFlux;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 
-public abstract class PFBlockEntity extends BlockEntity implements BlockEntityClientSerializable {
+public abstract class PFBlockEntity extends BlockEntity {
 
     protected boolean initialized;
     private final int tickSpacing, tickOffset;
+    private boolean shouldClientRemesh = true;
 
     public PFBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int tickSpacing) {
         super(type, pos, state);
@@ -53,26 +57,68 @@ public abstract class PFBlockEntity extends BlockEntity implements BlockEntityCl
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
-        nbt.putBoolean("initialized", initialized);
+    public final NbtCompound toInitialChunkDataNbt() {
+        NbtCompound nbt = super.toInitialChunkDataNbt();
+        saveClient(nbt);
+        nbt.putBoolean("#c", shouldClientRemesh); // mark client tag
+        shouldClientRemesh = false;
         return nbt;
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
+    public final BlockEntityUpdateS2CPacket toUpdatePacket() {
+        return BlockEntityUpdateS2CPacket.create(this);
+    }
+
+    public void sync() {
+        sync(true);
+    }
+
+    public void sync(boolean shouldRemesh) {
+        Preconditions.checkNotNull(world); // Maintain distinct failure case from below
+        if (!(world instanceof ServerWorld))
+            throw new IllegalStateException("Cannot call sync() on the logical client! Did you check world.isClient first?");
+
+        shouldClientRemesh = shouldRemesh | shouldClientRemesh;
+        ((ServerWorld) world).getChunkManager().markForUpdate(getPos());
+    }
+
+    @Override
+    protected final void writeNbt(NbtCompound nbt) {
+        save(nbt);
+    }
+
+    @Override
+    public final void readNbt(NbtCompound nbt) {
+        if (nbt.contains("#c")) {
+            loadClient(nbt);
+            if (nbt.getBoolean("#c")) {
+                remesh();
+            }
+        } else {
+            load(nbt);
+        }
+    }
+
+    public void save(NbtCompound nbt) {
+        super.writeNbt(nbt);
+        nbt.putBoolean("initialized", initialized);
+    }
+
+    public void load(NbtCompound nbt) {
         super.readNbt(nbt);
         initialized = nbt.getBoolean("initialized");
     }
 
-    @Override
-    public NbtCompound toClientTag(NbtCompound nbt) {
-        nbt.putBoolean("initialized", initialized);
-        return nbt;
-    }
+    public abstract void saveClient(NbtCompound nbt);
 
-    @Override
-    public void fromClientTag(NbtCompound nbt) {
-        initialized = nbt.getBoolean("initialized");
+    public abstract void loadClient(NbtCompound nbt);
+
+    public final void remesh() {
+        Preconditions.checkNotNull(world);
+        if (!(world instanceof ClientWorld))
+            throw new IllegalStateException("Cannot call remesh() on the server!");
+
+        world.updateListeners(pos, null, null, 0);
     }
 }

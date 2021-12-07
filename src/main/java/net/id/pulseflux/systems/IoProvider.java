@@ -1,6 +1,5 @@
 package net.id.pulseflux.systems;
 
-import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.id.pulseflux.systems.Polarity;
 import net.id.pulseflux.systems.PulseIo;
 import net.id.incubus_core.systems.Simulation;
@@ -46,9 +45,10 @@ public interface IoProvider {
             pulseIo.transferInductance(inductance, Simulation.ACT);
             pulseIo.setPolarity(polarity);
 
-            if(pulseIo instanceof BlockEntityClientSerializable syncable) {
-                syncable.sync();
-            }
+
+            //if(pulseIo instanceof BlockEntityClientSerializable syncable) {
+            //    syncable.sync();
+            //}
         }
     }
 

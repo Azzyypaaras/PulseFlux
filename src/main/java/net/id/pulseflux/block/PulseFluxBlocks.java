@@ -1,5 +1,6 @@
 package net.id.pulseflux.block;
 
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.id.incubus_core.util.RegistryQueue;
 import net.id.pulseflux.block.pulse.BaseDiodeBlock;
@@ -9,6 +10,7 @@ import net.id.pulseflux.block.transport.PipeBlock;
 import net.id.pulseflux.registry.PulseFluxRegistryQueues;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.MapColor;
 
 import static net.id.pulseflux.block.PFBlockActions.*;
 import static net.id.pulseflux.PulseFlux.locate;
@@ -21,13 +23,9 @@ public class PulseFluxBlocks {
         return ((identifier, block) -> EN_US.block(identifier, name));
     }
 
-    private static final RegistryQueue.Action<Block> generateAssets = (id, block) -> createBlockAssets(id);
-
     /**
      * POWER
      */
-
-    private static final RegistryQueue.Action<Block> generateDiodeAssets = (id, block) -> createDiodeAssets(id);
 
     public static final BaseDiodeBlock WORKSHOP_DIODE = add("workshop_diode", new BaseDiodeBlock(FabricBlockSettings.copy(Blocks.IRON_BLOCK)), generateDiodeAssets, generateLocale("Workshop Diode"));
 
@@ -37,9 +35,17 @@ public class PulseFluxBlocks {
      * LOGISTICS
      */
 
-    private static final RegistryQueue.Action<Block> generatePipeAssets = (id, block) -> createPipeAssets(id);
-
     public static final PipeBlock WOODEN_FLUID_PIPE = add("wooden_fluid_pipe", new FluidPipeBlock(FabricBlockSettings.copyOf(Blocks.OAK_LOG)), translucentRenderLayer, generatePipeAssets, generateLocale("Wooden Pipe"));
+
+    /**
+     * DECORATION
+     */
+
+    public static FabricBlockSettings treatedWood() {
+        return FabricBlockSettings.copyOf(Blocks.OAK_PLANKS).mapColor(MapColor.BROWN);
+    }
+
+    //public static final Block TREATED_WOOD_PLANKS = add("treated_wood_planks", new Block());
 
     /**
      * RESOURCES
