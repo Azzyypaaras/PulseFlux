@@ -53,7 +53,11 @@ public class PulseFluxBlocks {
         return FabricBlockSettings.copyOf(Blocks.OAK_PLANKS);
     }
 
+
     public static final Block VARNISHED_WOOD_PLANKS = add("varnished_wood_planks", new Block(varnishedWood()), planks, flammablePlanks, generateAssets, selfDrop, generateLocale("Varnished Wood Planks"));
+
+
+    public static final PipeBlock FLUID_PIPE = add("fluid_pipe", new PipeBlock(FabricBlockSettings.copy(Blocks.IRON_BLOCK)), generateLocale("Fluid Pipe"));
 
 
     /**

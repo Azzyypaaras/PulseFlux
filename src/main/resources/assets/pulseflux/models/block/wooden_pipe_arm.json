@@ -1,0 +1,6 @@
+{
+   "parent": "pulseflux:base/base_pipe_arm",
+ "textures": {
+    "0": "pulseflux:block/wooden_fluid_pipe_arm"
+  }
+}
