@@ -30,6 +30,7 @@ public class PulseFluxItems {
 
     public static final FabricItemSettings resource = new FabricItemSettings().group(PulseFluxItemGroups.RESOURCES);
     public static final FabricItemSettings logistics = new FabricItemSettings().group(PulseFluxItemGroups.LOGISTICS);
+    public static final FabricItemSettings machines = new FabricItemSettings().group(PulseFluxItemGroups.MACHINES);
     public static final FabricItemSettings decorations = new FabricItemSettings().group(PulseFluxItemGroups.DECORATION);
 
 
@@ -42,6 +43,13 @@ public class PulseFluxItems {
     public static final BlockItem CREATIVE_PULSE_SOURCE = add("creative_pulse_source", PulseFluxBlocks.CREATIVE_PULSE_SOURCE, logistics);
 
     public static final BlockItem WOODEN_FLUID_PIPE = add("wooden_fluid_pipe", PulseFluxBlocks.WOODEN_FLUID_PIPE, logistics);
+
+
+    /**
+     * MACHINES
+     */
+
+    public static final BlockItem TREETAP = add("treetap", PulseFluxBlocks.TREETAP, machines);
 
 
     /**

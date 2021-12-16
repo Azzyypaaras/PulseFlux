@@ -3,6 +3,7 @@ package net.id.pulseflux.block;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.id.incubus_core.util.RegistryQueue;
 import net.id.pulseflux.arrp.TagGen;
+import net.id.pulseflux.block.misc.TreetapBlock;
 import net.id.pulseflux.block.pulse.BaseDiodeBlock;
 import net.id.pulseflux.block.pulse.CreativePulseSourceBlock;
 import net.id.pulseflux.block.transport.FluidPipeBlock;
@@ -20,6 +21,14 @@ public class PulseFluxBlocks {
 
     private static RegistryQueue.Action<Block> generateLocale(String name) {
         return ((identifier, block) -> EN_US.block(identifier, name));
+    }
+
+    public static FabricBlockSettings treatedWood() {
+        return FabricBlockSettings.copyOf(Blocks.OAK_PLANKS).mapColor(MapColor.BROWN).strength(2.5F, 5.0F);
+    }
+
+    public static FabricBlockSettings varnishedWood() {
+        return FabricBlockSettings.copyOf(Blocks.OAK_PLANKS);
     }
 
 
@@ -40,18 +49,17 @@ public class PulseFluxBlocks {
 
 
     /**
+     * MISC
+     */
+
+    public static final TreetapBlock TREETAP = add("treetap", new TreetapBlock(varnishedWood()), selfDrop, generateLocale("Treetap"), translucentRenderLayer);
+
+
+    /**
      * DECORATION
      */
 
-    public static FabricBlockSettings treatedWood() {
-        return FabricBlockSettings.copyOf(Blocks.OAK_PLANKS).mapColor(MapColor.BROWN).strength(2.5F, 5.0F);
-    }
-
     public static final Block TREATED_WOOD_PLANKS = add("treated_wood_planks", new Block(treatedWood()), planks, generateAssets, selfDrop, generateLocale("Treated Wood Planks"));
-
-    public static FabricBlockSettings varnishedWood() {
-        return FabricBlockSettings.copyOf(Blocks.OAK_PLANKS);
-    }
 
     public static final Block VARNISHED_WOOD_PLANKS = add("varnished_wood_planks", new Block(varnishedWood()), planks, flammablePlanks, generateAssets, selfDrop, generateLocale("Varnished Wood Planks"));
 

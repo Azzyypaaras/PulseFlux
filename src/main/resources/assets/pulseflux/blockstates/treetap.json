@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,syphon=false": {
+      "model": "pulseflux:block/treetap"
+    },
+    "facing=east,syphon=false": {
+      "model": "pulseflux:block/treetap",
+      "y": 90
+    },
+    "facing=south,syphon=false": {
+      "model": "pulseflux:block/treetap",
+      "y": 180
+    },
+    "facing=west,syphon=false": {
+      "model": "pulseflux:block/treetap",
+      "y": 270
+    },
+    "facing=north,syphon=true": {
+      "model": "pulseflux:block/treetap_piped"
+    },
+    "facing=east,syphon=true": {
+      "model": "pulseflux:block/treetap_piped",
+      "y": 90
+    },
+    "facing=south,syphon=true": {
+      "model": "pulseflux:block/treetap_piped",
+      "y": 180
+    },
+    "facing=west,syphon=true": {
+      "model": "pulseflux:block/treetap_piped",
+      "y": 270
+    }
+  }
+}

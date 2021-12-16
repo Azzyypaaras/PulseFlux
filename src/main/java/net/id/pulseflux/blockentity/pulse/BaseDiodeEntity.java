@@ -1,12 +1,14 @@
-package net.id.pulseflux.blockentity;
+package net.id.pulseflux.blockentity.pulse;
 
 import com.google.common.collect.ImmutableList;
-import net.id.incubus_core.systems.DefaultMaterials;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
+import net.id.incubus_core.systems.Material;
+import net.id.pulseflux.blockentity.PulseBlockEntity;
+import net.id.pulseflux.blockentity.PulseFluxBlockEntities;
+import net.id.pulseflux.systems.PulseIo;
 import net.id.pulseflux.block.property.DirectionalIoProperty;
 import net.id.pulseflux.block.pulse.BaseDiodeBlock;
 import net.id.pulseflux.systems.IoProvider;
-import net.id.pulseflux.systems.Polarity;
-import net.id.pulseflux.systems.PulseIo;
 import net.id.pulseflux.util.LogisticsHelper;
 import net.id.pulseflux.util.RelativeObjectData;
 import net.minecraft.block.BlockState;
@@ -16,25 +18,25 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
-import static net.id.pulseflux.block.pulse.BaseDiodeBlock.getIoDir;
+import static net.id.pulseflux.block.pulse.BaseDiodeBlock.*;
 
-public class CreativePulseSourceEntity extends PulseBlockEntity implements IoProvider {
+public class BaseDiodeEntity extends PulseBlockEntity implements IoProvider {
 
     @NotNull private Optional<RelativeObjectData<PulseIo>> child = Optional.empty();
     private int renderTicks = -25;
 
-    public CreativePulseSourceEntity(BlockPos pos, BlockState state) {
-        super(PulseFluxBlockEntities.CREATIVE_PULSE_SOURCE_ENTITY_BLOCK_ENTITY_TYPE, DefaultMaterials.DIAMOND, pos, state, 20);
+
+    public BaseDiodeEntity(Material material, BlockPos pos, BlockState state) {
+        super(PulseFluxBlockEntities.WORKSHOP_DIODE_TYPE, material, pos, state, 80);
     }
 
     @Override
     protected boolean initialize(World world, BlockPos pos, BlockState state) {
         child = getIoDir(state, IoType.OUTPUT).flatMap(dir -> LogisticsHelper.seekPulseIo(IoType.INPUT, world, pos, dir));
-        frequency = 100;
-        inductance = 100;
-        polarity = Polarity.NEUTRAL;
         return true;
     }
 
@@ -47,33 +49,23 @@ public class CreativePulseSourceEntity extends PulseBlockEntity implements IoPro
             if(child.isEmpty() || !child.get().isValid()) {
                 child = getIoDir(state, IoType.OUTPUT).flatMap(dir -> LogisticsHelper.seekPulseIo(IoType.INPUT, world, pos, dir));
             }
-            else {
-                if(!world.isClient()) {
-                    requestUpdate(child.get().object(), inductance, frequency, dissonance, polarity);
-                }
-            }
         }
     }
-
-    @Override
-    public boolean canUpdateChildren() {
-        return true;
-    }
-
-    @Override
-    public void markRemoved() {
-        super.markRemoved();
-    }
-
 
     @Override
     public @NotNull IoType getIoCapabilities(Direction direction) {
         return getCachedState().get(DirectionalIoProperty.IO_PROPERTIES.get(direction));
     }
 
+    public static FabricBlockEntityTypeBuilder.Factory<BaseDiodeEntity> factory(Material material) {
+        return ((blockPos, blockState) -> new BaseDiodeEntity(material, blockPos, blockState));
+    }
+
     @Override
     public @NotNull List<Direction> getInputs(Type type) {
-        return Collections.emptyList();
+        return BaseDiodeBlock.getIoDir(getCachedState(), IoType.INPUT)
+                .map(ImmutableList::of)
+                .orElse(ImmutableList.of());
     }
 
     @Override
@@ -94,19 +86,15 @@ public class CreativePulseSourceEntity extends PulseBlockEntity implements IoPro
     }
 
     @Override
-    public long getFailureDissonance() {
-        return Long.MAX_VALUE;
-    }
-
-    @Override
     public @NotNull Category getDeviceCategory() {
-        return Category.PRODUCER;
+        return Category.CONNECTOR;
     }
 
     @Override
     public void load(NbtCompound nbt) {
         super.load(nbt);
         renderTicks = nbt.getInt("renderProgress");
+
     }
 
     @Override

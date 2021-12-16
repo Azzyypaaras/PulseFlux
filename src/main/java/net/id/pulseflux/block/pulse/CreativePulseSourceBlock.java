@@ -1,13 +1,8 @@
 package net.id.pulseflux.block.pulse;
 
-import com.google.common.collect.ImmutableMap;
-import net.id.incubus_core.systems.DefaultMaterials;
 import net.id.pulseflux.block.PFBlockWithEntity;
-import net.id.pulseflux.blockentity.BaseDiodeEntity;
-import net.id.pulseflux.blockentity.CreativePulseSourceEntity;
+import net.id.pulseflux.blockentity.pulse.CreativePulseSourceEntity;
 import net.id.pulseflux.blockentity.PFBlockEntity;
-import net.id.pulseflux.util.LogisticsHelper;
-import net.id.pulseflux.util.RelativeObjectData;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -15,7 +10,6 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;

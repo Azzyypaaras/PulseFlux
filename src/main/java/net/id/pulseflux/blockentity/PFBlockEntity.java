@@ -50,7 +50,9 @@ public abstract class PFBlockEntity extends BlockEntity {
         return tickSpacing == 0 || (world.getTime() + tickOffset) % tickSpacing == 0;
     }
 
-    protected abstract boolean initialize(World world, BlockPos pos, BlockState state);
+    protected boolean initialize(World world, BlockPos pos, BlockState state) {
+        return true;
+    }
 
     public boolean hasInitialized() {
         return initialized;

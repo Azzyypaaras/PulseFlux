@@ -1,9 +1,8 @@
 package net.id.pulseflux.block.pulse;
 
-import com.google.common.collect.ImmutableMap;
 import net.id.incubus_core.systems.DefaultMaterials;
 import net.id.pulseflux.block.PFBlockWithEntity;
-import net.id.pulseflux.blockentity.BaseDiodeEntity;
+import net.id.pulseflux.blockentity.pulse.BaseDiodeEntity;
 import net.id.pulseflux.blockentity.PFBlockEntity;
 import net.id.pulseflux.util.LogisticsHelper;
 import net.id.pulseflux.util.RelativeObjectData;

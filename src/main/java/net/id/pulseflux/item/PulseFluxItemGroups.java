@@ -15,6 +15,11 @@ public class PulseFluxItemGroups {
             (() -> new ItemStack(PulseFluxBlocks.WORKSHOP_DIODE))
     );
 
+    public static final ItemGroup MACHINES = FabricItemGroupBuilder.build(
+            PulseFlux.locate("machines"),
+            (() -> new ItemStack(PulseFluxBlocks.WORKSHOP_DIODE))
+    );
+
     public static final ItemGroup RESOURCES = FabricItemGroupBuilder.build(
             PulseFlux.locate("resources"),
             (() -> new ItemStack(PulseFluxItems.HSLA_STEEL_INGOT))
@@ -27,6 +32,7 @@ public class PulseFluxItemGroups {
 
     static {
         PulseFluxResources.EN_US.itemGroup(PulseFlux.locate("logistics"), "PF Logistics");
+        PulseFluxResources.EN_US.itemGroup(PulseFlux.locate("machines"), "PF Machines");
         PulseFluxResources.EN_US.itemGroup(PulseFlux.locate("resources"), "PF Resources");
         PulseFluxResources.EN_US.itemGroup(PulseFlux.locate("decoration"), "PF Decorations");
     }
