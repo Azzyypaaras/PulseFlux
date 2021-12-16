@@ -1,7 +1,9 @@
 package net.id.pulseflux.arrp;
 
 import net.devtech.arrp.json.blockstate.JState;
+import net.devtech.arrp.json.blockstate.JWhen;
 import net.devtech.arrp.json.models.JModel;
+import net.id.pulseflux.util.mixin.EWhen;
 import net.minecraft.util.Identifier;
 
 import static net.id.pulseflux.arrp.PulseFluxResources.*;
@@ -65,26 +67,32 @@ public class AssetGen {
     }
 
     public static void createPipeAssets(Identifier block) {
-        var armId = appendPath(block, "arm");
-        var coreId = appendPath(block, "core");
-        var straightId = appendPath(block, "straight");
+        var id = splicePath(block, "block");
+        var armId = appendPath(id, "_arm");
+        var coreId = appendPath(id, "_core");
+        var straightId = appendPath(id, "_straight");
         PACK.addModel(JModel.model("pulseflux:base/base_pipe_arm").textures(JModel.textures().var("all", armId.toString())), armId);
         PACK.addModel(JModel.model("pulseflux:base/base_pipe_core").textures(JModel.textures().var("all", coreId.toString())), coreId);
         PACK.addModel(JModel.model("pulseflux:base/base_pipe_straight").textures(JModel.textures().var("all", straightId.toString())), straightId);
+        PACK.addModel(JModel.model("pulseflux:base/base_pipe_straight").textures(JModel.textures().var("all", straightId.toString())), splicePath(block, "item"));
         PACK.addBlockState(JState.state(
                 //core
-                JState.multipart(JState.model(coreId)).when(when().add("straight", "false")),
+                JState.multipart(JState.model(coreId)).when((JWhen) ewhen().add("straight", "false")),
                 //arms
-                JState.multipart(JState.model(armId)).when(when().add("straight", "false").add("north", "true")),
-                JState.multipart(JState.model(armId).y(90)).when(when().add("straight", "false").add("east", "true")),
-                JState.multipart(JState.model(armId).y(180)).when(when().add("straight", "false").add("south", "true")),
-                JState.multipart(JState.model(armId).y(270)).when(when().add("straight", "false").add("west", "true")),
-                JState.multipart(JState.model(armId).x(270)).when(when().add("straight", "false").add("up", "true")),
-                JState.multipart(JState.model(armId).x(90)).when(when().add("straight", "false").add("down", "true")),
+                JState.multipart(JState.model(armId)).when((JWhen) ewhen().add("straight", "false").add("north", "true")),
+                JState.multipart(JState.model(armId).y(90)).when((JWhen) ewhen().add("straight", "false").add("east", "true")),
+                JState.multipart(JState.model(armId).y(180)).when((JWhen) ewhen().add("straight", "false").add("south", "true")),
+                JState.multipart(JState.model(armId).y(270)).when((JWhen) ewhen().add("straight", "false").add("west", "true")),
+                JState.multipart(JState.model(armId).x(270)).when((JWhen) ewhen().add("straight", "false").add("up", "true")),
+                JState.multipart(JState.model(armId).x(90)).when((JWhen) ewhen().add("straight", "false").add("down", "true")),
                 //straights
-                JState.multipart(JState.model(straightId)).when(when().add("straight", "true").add("linear_axis", "z")),
-                JState.multipart(JState.model(straightId).y(90)).when(when().add("straight", "true").add("linear_axis", "x")),
-                JState.multipart(JState.model(straightId).x(270)).when(when().add("straight", "true").add("linear_axis", "y"))
+                JState.multipart(JState.model(straightId)).when((JWhen) ewhen().add("straight", "true").add("axis", "z")),
+                JState.multipart(JState.model(straightId).y(90)).when((JWhen) ewhen().add("straight", "true").add("axis", "x")),
+                JState.multipart(JState.model(straightId).x(270)).when((JWhen) ewhen().add("straight", "true").add("axis", "y"))
         ), block);
+    }
+
+    public static EWhen ewhen() {
+        return (EWhen) when();
     }
 }

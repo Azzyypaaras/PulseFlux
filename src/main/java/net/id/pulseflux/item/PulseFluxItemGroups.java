@@ -20,8 +20,14 @@ public class PulseFluxItemGroups {
             (() -> new ItemStack(PulseFluxItems.HSLA_STEEL_INGOT))
     );
 
+    public static final ItemGroup DECORATION = FabricItemGroupBuilder.build(
+            PulseFlux.locate("decoration"),
+            (() -> new ItemStack(PulseFluxItems.TREATED_WOOD_PLANKS))
+    );
+
     static {
         PulseFluxResources.EN_US.itemGroup(PulseFlux.locate("logistics"), "PF Logistics");
         PulseFluxResources.EN_US.itemGroup(PulseFlux.locate("resources"), "PF Resources");
+        PulseFluxResources.EN_US.itemGroup(PulseFlux.locate("decoration"), "PF Decorations");
     }
 }

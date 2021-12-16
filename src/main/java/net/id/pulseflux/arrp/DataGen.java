@@ -1,5 +1,8 @@
 package net.id.pulseflux.arrp;
 
+import net.devtech.arrp.json.loot.JEntry;
+import net.devtech.arrp.json.loot.JLootTable;
+import net.devtech.arrp.json.loot.JPool;
 import net.devtech.arrp.json.recipe.*;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
@@ -35,5 +38,18 @@ public class DataGen {
                         JIngredient.ingredient().item(ingredient)
                 ),
                 JResult.itemStack(result, count)));
+    }
+
+    public static void lootSelfDrop(Identifier id) {
+        PACK.addLootTable(splicePath(id, "blocks"), JLootTable.loot("minecraft:block").pool(
+                JLootTable.pool()
+                        .rolls(1)
+                        .bonus(0)
+                        .entry(JLootTable.entry()
+                                .type("minecraft:item")
+                                .name(id.toString()))
+                        .condition(JLootTable.predicate("minecraft:survives_explosion"))
+                )
+        );
     }
 }

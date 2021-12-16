@@ -24,10 +24,10 @@ public class WorldChunkMixin {
         updateChildren(world.getBlockEntity(pos));
     }
 
-    @Inject(method = "removeBlockEntity(Lnet/minecraft/block/entity/BlockEntity;)V", at = @At("HEAD"))
-    public void notifyRemoval(BlockEntity blockEntity, CallbackInfo ci) {
-        updateChildren(blockEntity);
-    }
+    //@Inject(method = "removeBlockEntity(Lnet/minecraft/block/entity/BlockEntity;)V", at = @At("HEAD"))
+    //public void notifyRemoval(BlockEntity blockEntity, CallbackInfo ci) {
+    //    updateChildren(blockEntity);
+    //}
 
     private static void updateChildren(BlockEntity be) {
         if(be instanceof IoProvider provider && !be.getWorld().isClient()) {

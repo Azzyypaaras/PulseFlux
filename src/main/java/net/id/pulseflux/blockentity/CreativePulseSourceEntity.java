@@ -104,27 +104,14 @@ public class CreativePulseSourceEntity extends PulseBlockEntity implements IoPro
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void load(NbtCompound nbt) {
+        super.load(nbt);
         renderTicks = nbt.getInt("renderProgress");
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    public void save(NbtCompound nbt) {
         nbt.putInt("renderProgress", renderTicks);
-        return super.writeNbt(nbt);
-    }
-
-    @Override
-    public void fromClientTag(NbtCompound nbt) {
-        super.fromClientTag(nbt);
-        renderTicks = nbt.getInt("renderProgress");
-    }
-
-    @Override
-    public NbtCompound toClientTag(NbtCompound nbt) {
-        super.toClientTag(nbt);
-        nbt.putInt("renderProgress", renderTicks);
-        return nbt;
+        super.save(nbt);
     }
 }

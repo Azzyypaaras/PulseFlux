@@ -2,10 +2,7 @@ package net.id.pulseflux.arrp;
 
 import net.devtech.arrp.api.RRPCallback;
 import net.devtech.arrp.api.RuntimeResourcePack;
-import net.devtech.arrp.json.blockstate.JState;
 import net.devtech.arrp.json.lang.JLang;
-import net.devtech.arrp.json.models.JModel;
-import net.id.pulseflux.PulseFlux;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
@@ -20,9 +17,13 @@ public class PulseFluxResources {
 
     public static void init() {
 
+        TagGen.addTags();
+
         PACK.addLang(locate("en_us"), EN_US);
 
         RRPCallback.BEFORE_VANILLA.register(a -> a.add(PACK));
+
+        //PACK.dump();
     }
 
     public static Identifier splicePath(Identifier id, String insert) {
@@ -31,6 +32,18 @@ public class PulseFluxResources {
 
     public static Identifier appendPath(Identifier id, String insert) {
         return new Identifier(id.getNamespace(), id.getPath() + insert);
+    }
+
+    public static Identifier vanilla(String path) {
+        return new Identifier("minecraft", path);
+    }
+
+    public static Identifier fabric(String path) {
+        return new Identifier("fabric", path);
+    }
+
+    public static Identifier common(String path) {
+        return new Identifier("c", path);
     }
 
     public static Identifier getBlockId(Block block) {

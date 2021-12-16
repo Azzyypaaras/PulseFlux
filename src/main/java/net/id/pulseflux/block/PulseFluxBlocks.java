@@ -2,16 +2,19 @@ package net.id.pulseflux.block;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.id.incubus_core.util.RegistryQueue;
+import net.id.pulseflux.arrp.TagGen;
 import net.id.pulseflux.block.pulse.BaseDiodeBlock;
 import net.id.pulseflux.block.pulse.CreativePulseSourceBlock;
+import net.id.pulseflux.block.transport.FluidPipeBlock;
 import net.id.pulseflux.block.transport.PipeBlock;
 import net.id.pulseflux.registry.PulseFluxRegistryQueues;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.MapColor;
 
+import static net.id.pulseflux.block.PulseFluxBlockActions.*;
 import static net.id.pulseflux.PulseFlux.locate;
 import static net.id.pulseflux.arrp.PulseFluxResources.*;
-import static net.id.pulseflux.arrp.AssetGen.*;
 
 public class PulseFluxBlocks {
 
@@ -19,25 +22,49 @@ public class PulseFluxBlocks {
         return ((identifier, block) -> EN_US.block(identifier, name));
     }
 
-    private static final RegistryQueue.Action<Block> generateAssets = (id, block) -> createBlockAssets(id);
+
+    /**
+     * POWER
+     */
+
+    public static final BaseDiodeBlock WORKSHOP_DIODE = add("workshop_diode", new BaseDiodeBlock(FabricBlockSettings.copy(Blocks.IRON_BLOCK)), generateDiodeAssets, useWrench, selfDrop, generateLocale("Workshop Diode"));
+
+    public static final CreativePulseSourceBlock CREATIVE_PULSE_SOURCE = add("creative_pulse_source", new CreativePulseSourceBlock(FabricBlockSettings.copy(Blocks.NETHERITE_BLOCK)), generateDiodeAssets, useWrench, tier(TagGen.Tier.NETHERITE), selfDrop, generateLocale("Creative Pulse Source"));
+
 
     /**
      * LOGISTICS
      */
 
-    private static final RegistryQueue.Action<Block> generateDiodeAssets = (id, block) -> createDiodeAssets(id);
+    public static final PipeBlock WOODEN_FLUID_PIPE = add("wooden_fluid_pipe", new FluidPipeBlock(FabricBlockSettings.copyOf(Blocks.OAK_LOG)), translucentRenderLayer, generatePipeAssets, useWrench, selfDrop, generateLocale("Wooden Pipe"));
 
-    public static final BaseDiodeBlock WORKSHOP_DIODE = add("workshop_diode", new BaseDiodeBlock(FabricBlockSettings.copy(Blocks.IRON_BLOCK)), generateDiodeAssets, generateLocale("Workshop Diode"));
 
-    public static final CreativePulseSourceBlock CREATIVE_PULSE_SOURCE = add("creative_pulse_source", new CreativePulseSourceBlock(FabricBlockSettings.copy(Blocks.NETHERITE_BLOCK)), generateDiodeAssets, generateLocale("Creative Pulse Source"));
+    /**
+     * DECORATION
+     */
+
+    public static FabricBlockSettings treatedWood() {
+        return FabricBlockSettings.copyOf(Blocks.OAK_PLANKS).mapColor(MapColor.BROWN).strength(2.5F, 5.0F);
+    }
+
+    public static final Block TREATED_WOOD_PLANKS = add("treated_wood_planks", new Block(treatedWood()), planks, generateAssets, selfDrop, generateLocale("Treated Wood Planks"));
+
+    public static FabricBlockSettings varnishedWood() {
+        return FabricBlockSettings.copyOf(Blocks.OAK_PLANKS);
+    }
+
+
+    public static final Block VARNISHED_WOOD_PLANKS = add("varnished_wood_planks", new Block(varnishedWood()), planks, flammablePlanks, generateAssets, selfDrop, generateLocale("Varnished Wood Planks"));
+
 
     public static final PipeBlock FLUID_PIPE = add("fluid_pipe", new PipeBlock(FabricBlockSettings.copy(Blocks.IRON_BLOCK)), generateLocale("Fluid Pipe"));
+
 
     /**
      * RESOURCES
      */
 
-    public static final Block HSLA_STEEL_BLOCK = add("hsla_steel_block", new Block(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)), generateAssets, generateLocale("HSLA Steel Block"));
+    public static final Block HSLA_STEEL_BLOCK = add("hsla_steel_block", new Block(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)), generateAssets, selfDrop, generateLocale("HSLA Steel Block"));
 
 
 

@@ -4,6 +4,7 @@ import net.id.pulseflux.blockentity.PulseFluxBlockEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 
@@ -33,4 +34,15 @@ public class FluidPipeEntity extends BlockEntity {
             nbt.putUuid("connectedNetworkID", connectedNetworkID);
         return super.writeNbt(nbt);
     }
+
+    @Override
+    public void saveClient(NbtCompound nbt) {
+
+    }
+
+    @Override
+    public void loadClient(NbtCompound nbt) {
+
+    }
 }
+

@@ -1,6 +1,5 @@
 package net.id.pulseflux.blockentity;
 
-import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.id.incubus_core.systems.Material;
 import net.id.pulseflux.systems.Polarity;
 import net.id.pulseflux.systems.PulseIo;
@@ -12,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class PulseBlockEntity extends PFBlockEntity implements PulseIo, BlockEntityClientSerializable {
+public abstract class PulseBlockEntity extends PFBlockEntity implements PulseIo {
 
     protected final Material material;
     @NotNull protected Polarity polarity = Polarity.NONE;
@@ -82,8 +81,8 @@ public abstract class PulseBlockEntity extends PFBlockEntity implements PulseIo,
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void load(NbtCompound nbt) {
+        super.load(nbt);
         polarity = Polarity.valueOf(nbt.getString("polarity"));
         frequency = nbt.getLong("frequency");
         inductance = nbt.getLong("inductance");
@@ -91,29 +90,21 @@ public abstract class PulseBlockEntity extends PFBlockEntity implements PulseIo,
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
+    public void save(NbtCompound nbt) {
+        super.save(nbt);
         nbt.putString("polarity", polarity.name());
         nbt.putLong("frequency", frequency);
         nbt.putLong("inductance", inductance);
         nbt.putDouble("dissonance", dissonance);
-        return nbt;
     }
 
     @Override
-    public void fromClientTag(NbtCompound nbt) {
-        polarity = Polarity.valueOf(nbt.getString("polarity"));
-        frequency = nbt.getLong("frequency");
-        inductance = nbt.getLong("inductance");
-        dissonance = nbt.getDouble("dissonance");
+    public void loadClient(NbtCompound nbt) {
+        load(nbt);
     }
 
     @Override
-    public NbtCompound toClientTag(NbtCompound nbt) {
-        nbt.putString("polarity", polarity.name());
-        nbt.putLong("frequency", frequency);
-        nbt.putLong("inductance", inductance);
-        nbt.putDouble("dissonance", dissonance);
-        return nbt;
+    public void saveClient(NbtCompound nbt) {
+        save(nbt);
     }
 }
