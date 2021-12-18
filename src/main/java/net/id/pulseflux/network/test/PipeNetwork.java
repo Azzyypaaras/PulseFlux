@@ -1,14 +1,22 @@
-package net.id.pulseflux.network;
+package net.id.pulseflux.network.test;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
+import java.util.HashSet;
 import java.util.UUID;
 
 public class PipeNetwork {
     public UUID networkID;
+    HashSet<BlockPos> connectedPipes = new HashSet<>();
 
     public PipeNetwork(UUID networkID) {
         this.networkID = networkID;
+    }
+
+    public boolean addPipeToNetwork(BlockPos pos) {
+        return connectedPipes.add(pos);
     }
 
     public static PipeNetwork readFromNbt(NbtCompound tag) {

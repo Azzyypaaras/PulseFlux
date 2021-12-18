@@ -1,9 +1,10 @@
-package net.id.pulseflux.network;
+package net.id.pulseflux.network.test;
 
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -11,13 +12,19 @@ import java.util.UUID;
 public class NetworkStorage implements AutoSyncedComponent {
     public static final HashMap<UUID, PipeNetwork> NETWORKS = new HashMap<>();
 
-    public static UUID createNewNetwork() {
+    private static UUID createNewNetwork() {
         UUID networkID;
         do {
             networkID = UUID.randomUUID();
         } while (NETWORKS.containsKey(networkID));
         PipeNetwork pipeNetwork = new PipeNetwork(networkID);
         NETWORKS.put(networkID, pipeNetwork);
+        return networkID;
+    }
+
+    public static UUID createNewNetwork(BlockPos pos){
+        UUID networkID = createNewNetwork();
+        NETWORKS.get(networkID).addPipeToNetwork(pos);
         return networkID;
     }
 

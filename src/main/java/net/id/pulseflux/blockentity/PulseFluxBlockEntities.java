@@ -21,7 +21,7 @@ public class PulseFluxBlockEntities {
 
     public static final BlockEntityType<BaseDiodeEntity> WORKSHOP_DIODE_ENTITY_TYPE = add("workshop_diode", create(BaseDiodeEntity.factory(DefaultMaterials.IRON), WORKSHOP_DIODE), pulseProvider);
     public static final BlockEntityType<CreativePulseSourceEntity> CREATIVE_PULSE_SOURCE_ENTITY_BLOCK_ENTITY_TYPE = add("creative_pulse_source", create(CreativePulseSourceEntity::new, CREATIVE_PULSE_SOURCE), pulseProvider);
-    public static final BlockEntityType<FluidPipeEntity> FLUID_PIPE_BLOCK_ENTITY_TYPE = add("fluid_pipe", create(FluidPipeEntity::new, FLUID_PIPE));
+    public static final BlockEntityType<FluidPipeEntity> FLUID_PIPE_BLOCK_ENTITY_TYPE = add("fluid_pipe", create(FluidPipeEntity::new, WOODEN_FLUID_PIPE));
 
     public static void init() {
         PulseFluxRegistryQueues.BLOCK_ENTITY_TYPE.register();

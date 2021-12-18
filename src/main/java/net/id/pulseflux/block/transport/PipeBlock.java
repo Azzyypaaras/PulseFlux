@@ -34,8 +34,9 @@ public abstract class PipeBlock extends LogisticComponentBlock {
 
     public final BlockApiLookup<? extends Storage<?>, Direction> lookup;
 
-    public PipeBlock(Settings settings) {
-        super(settings);
+    public PipeBlock(Settings settings,  BlockApiLookup<? extends Storage<?>, Direction> lookup) {
+        super(settings,true);
+        this.lookup = lookup;
         for (Direction direction : Direction.values()) {
             setDefaultState(getDefaultState().with(CONNECTIONS.get(direction), false));
         }
@@ -197,11 +198,6 @@ public abstract class PipeBlock extends LogisticComponentBlock {
         return lookupResult != null && (lookupResult.supportsExtraction() || lookupResult.supportsInsertion());
     }
 
-    protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 6.0, 0.0, 16.0, 12.0, 16.0);
-    @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return SHAPE;
-    }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
