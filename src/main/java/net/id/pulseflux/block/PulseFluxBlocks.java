@@ -1,6 +1,7 @@
 package net.id.pulseflux.block;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.id.incubus_core.systems.DefaultMaterials;
 import net.id.incubus_core.util.RegistryQueue;
 import net.id.pulseflux.arrp.TagGen;
 import net.id.pulseflux.block.misc.TreetapBlock;
@@ -45,7 +46,7 @@ public class PulseFluxBlocks {
      * LOGISTICS
      */
 
-    public static final PipeBlock WOODEN_FLUID_PIPE = add("wooden_fluid_pipe", new FluidPipeBlock(FabricBlockSettings.copyOf(Blocks.OAK_LOG)), translucentRenderLayer, generatePipeAssets, useWrench, selfDrop, generateLocale("Wooden Pipe"));
+    public static final FluidPipeBlock WOODEN_FLUID_PIPE = add("wooden_fluid_pipe", new FluidPipeBlock(FabricBlockSettings.copyOf(Blocks.OAK_LOG), DefaultMaterials.IRON), translucentRenderLayer, generatePipeAssets, useWrench, selfDrop, generateLocale("Wooden Pipe"));
 
 
     /**

@@ -3,6 +3,7 @@ package net.id.pulseflux.block.transport;
 import com.google.common.collect.ImmutableMap;
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
+import net.id.pulseflux.network.TransferNetwork;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -24,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Map;
 
-public abstract class PipeBlock extends LogisticComponentBlock {
+public abstract class PipeBlock<T extends TransferNetwork<T>> extends LogisticComponentBlock<T> {
 
     public static final EnumProperty<Direction.Axis> LINEAR_AXIS = Properties.AXIS;
     public static final BooleanProperty STRAIGHT = BooleanProperty.of("straight");

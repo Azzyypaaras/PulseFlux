@@ -20,7 +20,9 @@ import java.util.Iterator;
 
 public class FluidPipeEntity extends PFBlockEntity {
 
-    public FluidPipeEntity(BlockEntityType<?> type, Material material , BlockPos pos, BlockState state) {
+
+
+    public FluidPipeEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
@@ -29,7 +31,6 @@ public class FluidPipeEntity extends PFBlockEntity {
 
     @Override
     protected boolean initialize(World world, BlockPos pos, BlockState state) {
-
         initialized = true;
         return true;
     }

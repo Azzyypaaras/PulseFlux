@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 public abstract class TransferNetwork<T extends TransferNetwork<?>> {
 
     public final UUID networkId;
-    public final Predicate<BlockState> componentValidator;
     public final List<BlockPos> invalidComponents;
 
     private final List<BlockPos> components;
@@ -25,17 +24,15 @@ public abstract class TransferNetwork<T extends TransferNetwork<?>> {
     private boolean revalidationRequestTick;
 
 
-    public TransferNetwork(World world, UUID networkId, Predicate<BlockState> componentValidator) {
+    public TransferNetwork(World world, UUID networkId) {
         this.world = world;
         this.networkId = networkId;
-        this.componentValidator = componentValidator;
         this.invalidComponents = new ArrayList<>();
         this.components = new ArrayList<>();
     }
 
-    public TransferNetwork(World world, NbtCompound nbt, Predicate<BlockState> componentValidator) {
+    public TransferNetwork(World world, NbtCompound nbt) {
         this.world = world;
-        this.componentValidator = componentValidator;
         this.networkId = nbt.getUuid("networkId");
         components = Arrays.stream(nbt.getLongArray("components")).mapToObj(BlockPos::fromLong).collect(Collectors.toList());
         invalidComponents = Arrays.stream(nbt.getLongArray("invalid")).mapToObj(BlockPos::fromLong).collect(Collectors.toList());
@@ -57,8 +54,8 @@ public abstract class TransferNetwork<T extends TransferNetwork<?>> {
     public void revalidateComponents() {
         List<BlockPos> invalidatedComponents = components
                 .stream()
-                .filter(pos -> !componentValidator.test(world.getBlockState(pos)))
-                .collect(Collectors.toList());
+                .filter(pos -> !isComponentValid(pos, world.getBlockState(pos)))
+                .toList();
         
         if(!invalidatedComponents.isEmpty()) {
             for (BlockPos component : invalidatedComponents) {
@@ -67,7 +64,7 @@ public abstract class TransferNetwork<T extends TransferNetwork<?>> {
                 for (Direction direction : Direction.values()) {
                     var pos = component.offset(direction);
                     var state = world.getBlockState(pos);
-                    if(state.getBlock() instanceof LogisticComponentBlock logisticComponent && componentValidator.test(state) && logisticComponent.isConnectedToComponent(world, pos, direction.getOpposite()))
+                    if(state.getBlock() instanceof LogisticComponentBlock logisticComponent && isComponentValid(pos, state) && logisticComponent.isConnectedToComponent(world, pos, direction.getOpposite()))
                         adjacency++;
                 }
 
@@ -87,7 +84,7 @@ public abstract class TransferNetwork<T extends TransferNetwork<?>> {
         revalidationRequestTick = true;
     }
 
-    abstract void yieldTo(T network, NetworkManager manager);
+    abstract void yieldTo(TransferNetwork<?> network, NetworkManager manager);
 
     public void appendComponent(BlockPos pos) {
         if(!components.contains(pos)) {
@@ -99,12 +96,20 @@ public abstract class TransferNetwork<T extends TransferNetwork<?>> {
     abstract void postAppend(BlockPos pos);
 
     public boolean containsComponent(BlockPos pos, BlockState component) {
-        return componentValidator.test(component) && components.contains(pos);
+        return isComponentValid(pos, component) && components.contains(pos);
     }
+
+    public abstract boolean isComponentValid(BlockPos pos, BlockState state);
 
     public boolean isEmpty() {
         return components.isEmpty();
     }
+
+    public boolean removeIfEmpty() {
+        return true;
+    }
+
+    abstract void postRemove();
 
     public int getConnectedComponents() {
         return components.size();
