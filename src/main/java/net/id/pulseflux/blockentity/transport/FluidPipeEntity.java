@@ -1,47 +1,93 @@
 package net.id.pulseflux.blockentity.transport;
 
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
-import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
-import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleVariantStorage;
-import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
-import net.fabricmc.fabric.impl.transfer.TransferApiImpl;
-import net.id.incubus_core.systems.Material;
 import net.id.pulseflux.blockentity.PFBlockEntity;
+import net.id.pulseflux.blockentity.PulseFluxBlockEntities;
+import net.id.pulseflux.network.FluidNetwork;
+import net.id.pulseflux.network.NetworkManager;
+import net.id.pulseflux.network.TransferNetwork;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Iterator;
+import java.util.Optional;
+import java.util.UUID;
 
 public class FluidPipeEntity extends PFBlockEntity {
 
+    @NotNull
+    private Optional<FluidNetwork> parentNetwork = Optional.empty();
+    @NotNull
+    private Optional<UUID> networkId = Optional.empty();
 
-
-    public FluidPipeEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
-        super(type, pos, state);
+    public FluidPipeEntity(BlockPos pos, BlockState state) {
+        super(PulseFluxBlockEntities.WOODEN_FLUID_PIPE_TYPE, pos, state);
     }
 
     @Override
-    protected void tick(BlockPos pos, BlockState state) {}
+    protected void tick(BlockPos pos, BlockState state) {
+        if(world == null)
+            return;
+
+        if(parentNetwork.isEmpty() && !world.isClient()) {
+            var manager = NetworkManager.getNetworkManager(world);
+
+            networkId.ifPresentOrElse(
+                    uuid -> {
+                        parentNetwork = manager.tryFetchNetwork(uuid);
+                        networkId = parentNetwork.map(network -> network.networkId);
+                    },
+                    () ->{
+                        parentNetwork = Optional.of(manager.joinOrCreateNetwork(world, pos));
+                        networkId = parentNetwork.map(network -> network.networkId);
+                    }
+                    );
+            markDirty();
+            NetworkManager.sync(world);
+            sync();
+        }
+    }
+
+    public void trySwitchNetwork(@NotNull FluidNetwork network, @NotNull NetworkManager manager) {
+        if(manager.world != this.world) {
+            throw new IllegalStateException("Cable tried to switch network at an invalid time! - " + pos.toString() + " - network - " + parentNetwork.map(TransferNetwork::toString).orElse("NONE"));
+        }
+        this.parentNetwork = Optional.of(network);
+        this.networkId = Optional.of(network.networkId);
+        markDirty();
+        sync();
+    }
+
+    public @NotNull Optional<FluidNetwork> getParentNetwork() {
+        return parentNetwork;
+    }
 
     @Override
-    protected boolean initialize(World world, BlockPos pos, BlockState state) {
-        initialized = true;
-        return true;
+    public void markRemoved() {
+        parentNetwork.ifPresent(TransferNetwork::requestNetworkRevalidation);
+        super.markRemoved();
+    }
+
+    @Override
+    public void save(NbtCompound nbt) {
+        super.save(nbt);
+        networkId.ifPresent(id -> nbt.putUuid("parent", id));
+    }
+
+    @Override
+    public void load(NbtCompound nbt) {
+        super.load(nbt);
+        networkId = Optional.ofNullable(nbt.getUuid("parent"));
     }
 
     @Override
     public void saveClient(NbtCompound nbt) {
-
+        networkId.ifPresent(id -> nbt.putUuid("parent", id));
     }
 
     @Override
     public void loadClient(NbtCompound nbt) {
-
+        networkId = nbt.contains("parent") ? Optional.ofNullable(nbt.getUuid("parent")) : Optional.empty();
     }
 }

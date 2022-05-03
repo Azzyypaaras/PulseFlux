@@ -201,7 +201,7 @@ public abstract class PipeBlock<T extends TransferNetwork<T>> extends LogisticCo
 
     @Override
     public boolean isConnectedToComponent(World world, BlockPos pos, Direction direction) {
-        return super.isConnectedToComponent(world, pos, direction);
+        return isDirectionOpen(world.getBlockState(pos), direction);
     }
 
     @Override

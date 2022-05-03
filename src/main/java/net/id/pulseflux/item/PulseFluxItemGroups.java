@@ -20,6 +20,12 @@ public class PulseFluxItemGroups {
             (() -> new ItemStack(PulseFluxBlocks.WORKSHOP_DIODE))
     );
 
+    public static final ItemGroup TOOLS = FabricItemGroupBuilder.build(
+            PulseFlux.locate("tools"),
+            (() -> new ItemStack(PulseFluxItems.NETWORK_DEBUGGER_ITEM))
+    );
+
+
     public static final ItemGroup RESOURCES = FabricItemGroupBuilder.build(
             PulseFlux.locate("resources"),
             (() -> new ItemStack(PulseFluxItems.HSLA_STEEL_INGOT))
@@ -31,9 +37,10 @@ public class PulseFluxItemGroups {
     );
 
     static {
-        PulseFluxResources.EN_US.itemGroup(PulseFlux.locate("logistics"), "PF Logistics");
-        PulseFluxResources.EN_US.itemGroup(PulseFlux.locate("machines"), "PF Machines");
-        PulseFluxResources.EN_US.itemGroup(PulseFlux.locate("resources"), "PF Resources");
-        PulseFluxResources.EN_US.itemGroup(PulseFlux.locate("decoration"), "PF Decorations");
+        PulseFluxResources.EN_US.itemGroup(PulseFlux.locate("logistics"), "§6PF Logistics");
+        PulseFluxResources.EN_US.itemGroup(PulseFlux.locate("machines"), "§6PF Machines");
+        PulseFluxResources.EN_US.itemGroup(PulseFlux.locate("tools"), "§6PF Tools");
+        PulseFluxResources.EN_US.itemGroup(PulseFlux.locate("resources"), "§6PF Resources");
+        PulseFluxResources.EN_US.itemGroup(PulseFlux.locate("decoration"), "§6PF Decorations");
     }
 }

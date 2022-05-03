@@ -3,17 +3,17 @@ package net.id.pulseflux.network;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.id.pulseflux.PulseFlux;
 import net.id.pulseflux.block.transport.LogisticComponentBlock;
+import net.id.pulseflux.block.transport.PipeBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.level.LevelProperties;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -36,6 +36,10 @@ public class NetworkManager implements AutoSyncedComponent, ServerTickingCompone
         return NETWORK_MANAGER_KEY.get(world);
     }
 
+    public static void sync(World world) {
+        NETWORK_MANAGER_KEY.sync(world);
+    }
+
     @Override
     public void serverTick() {
         for (TransferNetwork<?> network : managedNetworks.values()) {
@@ -50,15 +54,17 @@ public class NetworkManager implements AutoSyncedComponent, ServerTickingCompone
 
             if(!network.invalidComponents.isEmpty()) {
 
+                managedNetworks.remove(network.networkId);
+
                 Queue<BlockPos> nextGen = new LinkedList<>();
                 Set<BlockPos> traversedBlocks = new HashSet<>();
 
-                for (BlockPos invalidCable : network.invalidComponents) {
-                    traversedBlocks.add(invalidCable);
+                for (BlockPos invalidatedComponent : network.invalidComponents) {
+                    traversedBlocks.add(invalidatedComponent);
 
                     for (Direction baseDir : DIRECTIONS) {
 
-                        BlockPos start = invalidCable.offset(baseDir);
+                        BlockPos start = invalidatedComponent.offset(baseDir);
                         traversedBlocks.add(start);
                         nextGen.add(start);
 
@@ -91,26 +97,44 @@ public class NetworkManager implements AutoSyncedComponent, ServerTickingCompone
         }
     }
 
-    public @NotNull TransferNetwork<?> joinOrCreateNetwork(@NotNull World world, @NotNull BlockPos pos) {
+    public <T extends TransferNetwork<T>> Optional<T> tryFetchNetwork(UUID networkId) {
+        return (Optional<T>) Optional.ofNullable(managedNetworks.get(networkId));
+    }
+
+    public @NotNull <T extends TransferNetwork<T>> T joinOrCreateNetwork(@NotNull World world, @NotNull BlockPos pos) {
 
         Iterator<UUID> networkIds = managedNetworks.keySet().iterator();
-        List<TransferNetwork<?>> adjNetworks = new ArrayList<>();
+        List<T> adjNetworks = new ArrayList<>();
         BlockState component = world.getBlockState(pos);
-        LogisticComponentBlock componentBlock = (LogisticComponentBlock) component.getBlock();
+        LogisticComponentBlock<T> componentBlock = (LogisticComponentBlock<T>) component.getBlock();
 
         while(networkIds.hasNext() && adjNetworks.size() < 6) {
             UUID networkId = networkIds.next();
             var network = managedNetworks.get(networkId);
 
             if(network.containsComponent(pos, component)) {
-                return network;
+                return (T) network;
             }
             else {
-                for (Direction direction : DIRECTIONS) {
-                    var offPos = pos.offset(direction);
+                searchForNeighbours: {
+                    for (Direction direction : DIRECTIONS) {
+                        var offPos = pos.offset(direction);
+                        var neighbourComponent = world.getBlockState(offPos);
 
-                    if(network.containsComponent(offPos, world.getBlockState(offPos))) {
-                        adjNetworks.add(network);
+                        if(neighbourComponent.getBlock() instanceof LogisticComponentBlock<?> neighbourBlock) {
+                            if(componentBlock.isCompatibleWith(network) && network.containsComponent(offPos, neighbourComponent)) {
+                                if(neighbourBlock instanceof PipeBlock<?> neighbourPipe && !neighbourPipe.canConnectTo(world, component, pos, direction.getOpposite())) {
+                                    continue;
+                                }
+
+                                if(componentBlock instanceof PipeBlock<T> pipe && !pipe.canConnectTo(world, neighbourComponent, offPos, direction)) {
+                                    continue;
+                                }
+
+                                adjNetworks.add((T) network);
+                                break searchForNeighbours;
+                            }
+                        }
                     }
                 }
 
@@ -118,24 +142,23 @@ public class NetworkManager implements AutoSyncedComponent, ServerTickingCompone
         }
 
         if(!adjNetworks.isEmpty()) {
-            TransferNetwork<?> survivor;
+            T survivor;
             if(adjNetworks.size() == 1) {
                 survivor = adjNetworks.get(0);
                 survivor.appendComponent(pos);
             }
             else {
-                survivor = componentBlock.createNetwork(world, UUID.randomUUID());
+                survivor = adjNetworks.remove(0);
                 adjNetworks.stream().filter(network -> network != survivor).forEach(network -> network.yieldTo(survivor, this));
                 survivor.appendComponent(pos);
-                managedNetworks.put(survivor.networkId, survivor);
             }
             return survivor;
         }
 
-        TransferNetwork<?> network = componentBlock.createNetwork(world, UUID.randomUUID());
+        T network = componentBlock.createNetwork(world, UUID.randomUUID());
         managedNetworks.put(network.networkId, network);
         if(!world.isClient()) {
-            LOG.info("Created new Power Network at " + pos.toString());
+            LOG.info("Created new Transfer Network at " + pos);
         }
         network.appendComponent(pos);
         return network;
@@ -143,11 +166,38 @@ public class NetworkManager implements AutoSyncedComponent, ServerTickingCompone
 
     @Override
     public void readFromNbt(NbtCompound tag) {
+        int savedNetworks = tag.getInt("size");
+        LOG.info("Loading " + savedNetworks + " transfer networks");
 
+        for (int i = 0; i < savedNetworks; i++) {
+            var id = tag.getUuid("id_" + i);
+            var reconstructor = Reconstructors.getReconstructor(Identifier.tryParse(tag.getString("reconstructor_" + i)));
+
+            TransferNetwork<?> network = reconstructor.assemble(world, id, tag.getCompound("networkData_" + i));
+
+            if(network.getConnectedComponents() < 1 && network.removeIfEmpty()) {
+                LOG.error("Network " + network.networkId.toString() + " is empty, skipping!");
+                continue;
+            }
+
+            managedNetworks.put(network.networkId, network);
+            LOG.info("Network loaded: " + network);
+        }
     }
 
     @Override
     public void writeToNbt(NbtCompound tag) {
+        List<UUID> uuids = managedNetworks.keySet().stream().toList();
+        tag.putInt("size", uuids.size());
 
+        for (int i = 0; i < uuids.size(); i++) {
+            UUID networkId = uuids.get(i);
+
+            var network = managedNetworks.get(networkId);
+
+            tag.putUuid("id_" + i, networkId);
+            tag.put("networkData_" + i, network.save(new NbtCompound()));
+            tag.putString("reconstructor_" + i, Reconstructors.getId(network.getReconstructor()).toString());
+        }
     }
 }

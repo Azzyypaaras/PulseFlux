@@ -24,6 +24,9 @@
     ],
     "client": [
       "net.id.pulseflux.PulseFlux"
+    ],
+    "cardinal-components": [
+      "net.id.pulseflux.PulseFluxComponents"
     ]
   },
   "mixins": [

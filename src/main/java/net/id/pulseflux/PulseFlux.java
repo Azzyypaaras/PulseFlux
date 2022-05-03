@@ -10,6 +10,8 @@ import net.id.pulseflux.blockentity.PulseFluxBlockEntities;
 import net.id.pulseflux.client.render.PulseFluxRenderers;
 import net.id.pulseflux.item.PulseFluxItems;
 import net.id.pulseflux.arrp.PulseFluxResources;
+import net.id.pulseflux.network.Reconstructors;
+import net.id.pulseflux.registry.PulseFluxRegistries;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,11 +32,13 @@ public class PulseFlux implements ModInitializer, ClientModInitializer {
 
 	@Override
 	public void onInitialize() {
+		PulseFluxRegistries.init();
 		PulseFluxBlocks.init();
 		PulseFluxItems.init();
 		PulseFluxBlockEntities.init();
 		PulseFluxRecipes.init();
 		PulseFluxResources.init();
+		Reconstructors.register();
 	}
 
 	@Override

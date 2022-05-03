@@ -8,10 +8,13 @@ import net.id.pulseflux.network.NetworkManager;
 import net.id.pulseflux.network.TransferNetwork;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class FluidPipeBlock extends PipeBlock<FluidNetwork>{
@@ -23,15 +26,30 @@ public class FluidPipeBlock extends PipeBlock<FluidNetwork>{
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return null;
+        return new FluidPipeEntity(pos, state);
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        return FluidPipeEntity::tick;
     }
 
     @Override
     public void switchNetwork(BlockPos pos, FluidNetwork network, NetworkManager manager) {
-        var world = manager.world;
-        if(world.getBlockEntity(pos) instanceof FluidPipeEntity pipe) {
-
+        if(manager.world.getBlockEntity(pos) instanceof FluidPipeEntity pipe) {
+            pipe.trySwitchNetwork(network, manager);
         }
+    }
+
+    @Override
+    public Optional<FluidNetwork> getParentNetwork(World world, BlockPos pos) {
+        return ((FluidPipeEntity) world.getBlockEntity(pos)).getParentNetwork();
+    }
+
+    @Override
+    public boolean isCompatibleWith(TransferNetwork<?> network) {
+        return network instanceof FluidNetwork;
     }
 
     @Override

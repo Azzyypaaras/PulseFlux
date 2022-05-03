@@ -5,6 +5,7 @@ import net.id.incubus_core.util.RegistryQueue;
 import net.id.pulseflux.PulseFlux;
 import net.id.pulseflux.arrp.DataGen;
 import net.id.pulseflux.block.PulseFluxBlocks;
+import net.id.pulseflux.item.debug.NetworkDebuggerItem;
 import net.id.pulseflux.registry.PulseFluxRegistryQueues;
 import net.id.incubus_core.util.RegistryQueue.Action;
 import net.minecraft.block.Block;
@@ -31,6 +32,7 @@ public class PulseFluxItems {
     public static final FabricItemSettings resource = new FabricItemSettings().group(PulseFluxItemGroups.RESOURCES);
     public static final FabricItemSettings logistics = new FabricItemSettings().group(PulseFluxItemGroups.LOGISTICS);
     public static final FabricItemSettings machines = new FabricItemSettings().group(PulseFluxItemGroups.MACHINES);
+    public static final FabricItemSettings tools = new FabricItemSettings().group(PulseFluxItemGroups.TOOLS).maxCount(1);
     public static final FabricItemSettings decorations = new FabricItemSettings().group(PulseFluxItemGroups.DECORATION);
 
 
@@ -59,6 +61,13 @@ public class PulseFluxItems {
     public static final BlockItem TREATED_WOOD_PLANKS = add("treated_wood_planks", PulseFluxBlocks.TREATED_WOOD_PLANKS, decorations, generateBlockAssets);
 
     public static final BlockItem VARNISHED_WOOD_PLANKS = add("varnished_wood_planks", PulseFluxBlocks.VARNISHED_WOOD_PLANKS, decorations, generateBlockAssets);
+
+
+    /**
+     * TOOLS
+     */
+
+    public static final NetworkDebuggerItem NETWORK_DEBUGGER_ITEM = add("network_debugging_tool", new NetworkDebuggerItem(tools), generateAssets, generateLocale("Transfer Network Debug Tool"));
 
 
     /**

@@ -6,6 +6,7 @@ import net.id.incubus_core.systems.DefaultMaterials;
 import net.id.pulseflux.blockentity.misc.TreetapEntity;
 import net.id.pulseflux.blockentity.pulse.BaseDiodeEntity;
 import net.id.pulseflux.blockentity.pulse.CreativePulseSourceEntity;
+import net.id.pulseflux.blockentity.transport.FluidPipeEntity;
 import net.id.pulseflux.systems.Lookups;
 import net.id.pulseflux.systems.PulseIo;
 import net.id.incubus_core.util.RegistryQueue;
@@ -29,9 +30,14 @@ public class PulseFluxBlockEntities {
             return null;
         }), blockEntityType));
 
+
+    public static final BlockEntityType<FluidPipeEntity> WOODEN_FLUID_PIPE_TYPE = add("wooden_fluid_pipe", create(FluidPipeEntity::new, WOODEN_FLUID_PIPE));
+
+
     public static final BlockEntityType<BaseDiodeEntity> WORKSHOP_DIODE_TYPE = add("workshop_diode", create(BaseDiodeEntity.factory(DefaultMaterials.IRON), WORKSHOP_DIODE), pulseProvider);
     public static final BlockEntityType<CreativePulseSourceEntity> CREATIVE_PULSE_SOURCE_TYPE = add("creative_pulse_source", create(CreativePulseSourceEntity::new, CREATIVE_PULSE_SOURCE), pulseProvider);
-    
+
+
     public static final BlockEntityType<TreetapEntity> TREETAP_TYPE = add("treetap", create(TreetapEntity::new, TREETAP), treetapStorage);
     
     public static void init() {

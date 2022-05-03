@@ -11,6 +11,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public abstract class LogisticComponentBlock<T extends TransferNetwork<T>> extends PFBlockWithEntity {
@@ -23,7 +24,11 @@ public abstract class LogisticComponentBlock<T extends TransferNetwork<T>> exten
         return false;
     }
 
+    public abstract boolean isCompatibleWith(TransferNetwork<?> network);
+
     public abstract void switchNetwork(BlockPos pos, T network, NetworkManager manager);
+
+    public abstract Optional<T> getParentNetwork(World world, BlockPos pos);
 
     public abstract T createNetwork(World world, UUID id);
 }
