@@ -2,6 +2,7 @@ package net.id.pulseflux.block.transport;
 
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.id.incubus_core.systems.Material;
+import net.id.incubus_core.systems.MaterialProvider;
 import net.id.pulseflux.blockentity.transport.FluidPipeEntity;
 import net.id.pulseflux.network.FluidNetwork;
 import net.id.pulseflux.network.NetworkManager;
@@ -11,16 +12,22 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public class FluidPipeBlock extends PipeBlock<FluidNetwork>{
+public class FluidPipeBlock extends PipeBlock<FluidNetwork> implements MaterialProvider {
 
-    public FluidPipeBlock(Settings settings, Material material) {
+    private final Material material;
+    private final long volume;
+
+    public FluidPipeBlock(Settings settings, Material material, long volume) {
         super(settings, FluidStorage.SIDED);
+        this.material = material;
+        this.volume = volume;
     }
 
     @Nullable
@@ -48,12 +55,21 @@ public class FluidPipeBlock extends PipeBlock<FluidNetwork>{
     }
 
     @Override
-    public boolean isCompatibleWith(TransferNetwork<?> network) {
+    public boolean isCompatibleWith(TransferNetwork<?, ?> network) {
         return network instanceof FluidNetwork;
     }
 
     @Override
     public FluidNetwork createNetwork(World world, UUID id) {
         return new FluidNetwork(world, id);
+    }
+
+    @Override
+    public Material getMaterial(@Nullable Direction direction) {
+        return material;
+    }
+
+    public long volume() {
+        return volume;
     }
 }

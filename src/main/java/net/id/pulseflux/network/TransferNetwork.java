@@ -1,6 +1,9 @@
 package net.id.pulseflux.network;
 
 import com.google.common.collect.ImmutableMap;
+import net.fabricmc.fabric.api.transfer.v1.storage.TransferVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.base.ResourceAmount;
+import net.fabricmc.fabric.api.transfer.v1.transaction.base.SnapshotParticipant;
 import net.id.pulseflux.PulseFlux;
 import net.id.pulseflux.block.transport.LogisticComponentBlock;
 import net.minecraft.block.BlockState;
@@ -9,11 +12,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.level.LevelProperties;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 
 import static net.id.pulseflux.util.Shorthands.*;
 
-public abstract class TransferNetwork<T extends TransferNetwork<T>> {
+public abstract class TransferNetwork<T extends TransferNetwork<T, V>, V extends TransferVariant<?>> extends SnapshotParticipant<ResourceAmount<V>> {
 
     public final UUID networkId;
     public final List<BlockPos> invalidComponents;
@@ -205,7 +206,9 @@ public abstract class TransferNetwork<T extends TransferNetwork<T>> {
         revalidationRequestTick = true;
     }
 
-    abstract void yieldTo(TransferNetwork<?> network, NetworkManager manager);
+    abstract void yieldTo(T network, NetworkManager manager);
+
+    abstract void processDescendants(List<TransferNetwork<?, ?>> networks, NetworkManager manager);
 
     public void appendComponent(BlockPos pos) {
         if(!components.contains(pos)) {
@@ -222,7 +225,7 @@ public abstract class TransferNetwork<T extends TransferNetwork<T>> {
 
     public abstract boolean isComponentValid(BlockPos pos, BlockState state);
 
-    public boolean isSameKind(TransferNetwork<?> other) {
+    public boolean isSameKind(TransferNetwork<?, ?> other) {
         return this.getClass() == other.getClass();
     }
 
@@ -263,7 +266,7 @@ public abstract class TransferNetwork<T extends TransferNetwork<T>> {
     }
 
     @FunctionalInterface
-    public interface NetworkReconstructor<N extends TransferNetwork<N>> {
+    public interface NetworkReconstructor<N extends TransferNetwork<N, ?>> {
         N assemble(World world, UUID networkId, NbtCompound nbt);
     }
 

@@ -46,7 +46,7 @@ public class PulseFluxBlocks {
      * LOGISTICS
      */
 
-    public static final FluidPipeBlock WOODEN_FLUID_PIPE = add("wooden_fluid_pipe", new FluidPipeBlock(FabricBlockSettings.copyOf(Blocks.OAK_LOG), DefaultMaterials.IRON), translucentRenderLayer, generatePipeAssets, useWrench, selfDrop, generateLocale("Wooden Pipe"));
+    public static final FluidPipeBlock WOODEN_FLUID_PIPE = add("wooden_fluid_pipe", new FluidPipeBlock(FabricBlockSettings.copyOf(Blocks.OAK_LOG), DefaultMaterials.IRON, 81000), translucentRenderLayer, generatePipeAssets, useWrench, selfDrop, generateLocale("Wooden Pipe"));
 
 
     /**

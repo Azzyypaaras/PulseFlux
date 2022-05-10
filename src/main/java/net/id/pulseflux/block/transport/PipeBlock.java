@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Map;
 
-public abstract class PipeBlock<T extends TransferNetwork<T>> extends LogisticComponentBlock<T> {
+public abstract class PipeBlock<T extends TransferNetwork<T, ?>> extends LogisticComponentBlock<T> {
 
     public static final EnumProperty<Direction.Axis> LINEAR_AXIS = Properties.AXIS;
     public static final BooleanProperty STRAIGHT = BooleanProperty.of("straight");

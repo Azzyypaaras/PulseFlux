@@ -25,7 +25,7 @@ public class Reconstructors {
         return PulseFluxRegistries.NETWORK_RECONSTRUCTOR.get(id);
     }
 
-    private static <N extends TransferNetwork<N>> NetworkReconstructor<N> add(String id, NetworkReconstructor<N> reconstructor) {
+    private static <N extends TransferNetwork<N, ?>> NetworkReconstructor<N> add(String id, NetworkReconstructor<N> reconstructor) {
         return PulseFluxRegistryQueues.NETWORK_RECONSTRUCTOR.add(locate(id), reconstructor);
     }
 }
