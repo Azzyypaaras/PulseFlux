@@ -156,6 +156,7 @@ public class NetworkManager implements AutoSyncedComponent, ServerTickingCompone
         }
 
         T network = componentBlock.createNetwork(world, UUID.randomUUID());
+        network.setName(network.getOrCreateName(world, pos));
         managedNetworks.put(network.networkId, network);
         if(!world.isClient()) {
             LOG.info("Created new Transfer Network at " + pos);

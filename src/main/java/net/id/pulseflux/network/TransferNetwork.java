@@ -29,12 +29,13 @@ public abstract class TransferNetwork<T extends TransferNetwork<T>> {
 
     protected final List<BlockPos> components;
     protected final World world;
-    protected final Optional<String> name = Optional.empty();
+    protected Optional<String> name = Optional.empty();
 
     private boolean revalidationCached;
     private boolean revalidationRequestTick;
 
     protected static final List<Pair<Float, String>> randomPrefixes;
+    protected static final List<Pair<Float, String>> randomAffixes;
     protected static final List<String> people;
     protected static final Map<Biome.Category, List<String>> biomePrefixes;
     protected static final List<String> deepPrefixPrefixes;
@@ -52,6 +53,7 @@ public abstract class TransferNetwork<T extends TransferNetwork<T>> {
     public TransferNetwork(World world, NbtCompound nbt) {
         this.world = world;
         this.networkId = nbt.getUuid("networkId");
+        name = Optional.ofNullable(nbt.getString("name"));
         components = Arrays.stream(nbt.getLongArray("components")).mapToObj(BlockPos::fromLong).collect(Collectors.toList());
         invalidComponents = Arrays.stream(nbt.getLongArray("invalid")).mapToObj(BlockPos::fromLong).collect(Collectors.toList());
         revalidationCached = nbt.getBoolean("revalidating");
@@ -102,6 +104,10 @@ public abstract class TransferNetwork<T extends TransferNetwork<T>> {
         }
     }
 
+    public void  setName(@NotNull String newName) {
+        name = Optional.of(newName);
+    }
+
     public String getOrCreateName(@NotNull World world, @NotNull BlockPos pos) {
         var random = world.getRandom();
         var finalName = getNetworkTitle();
@@ -111,10 +117,11 @@ public abstract class TransferNetwork<T extends TransferNetwork<T>> {
 
         if(random.nextBoolean()) {
             finalName = getPrefix(random, world.getBiome(pos), pos.getY(), world.isSkyVisible(pos)) + " " + finalName;
+            prefixed = true;
         }
 
         getPerson: {
-            if(random.nextFloat() < 0.25) {
+            if(random.nextFloat() < (prefixed ? 0.175 : 0.5)) {
                 namedPerson = true;
 
                 if(person.equals("Azazel's Own") || person.equals("§kCummy§r"))
@@ -126,13 +133,14 @@ public abstract class TransferNetwork<T extends TransferNetwork<T>> {
                 else {
                     person += "'s";
                 }
+
+                finalName = person + " " + finalName;
             }
         }
 
-        finalName = person + " " + finalName;
-
         if(!prefixed || random.nextBoolean()) {
-
+            if(!namedPerson || random.nextBoolean())
+                finalName += getAffix(random);
         }
 
         return finalName;
@@ -141,17 +149,15 @@ public abstract class TransferNetwork<T extends TransferNetwork<T>> {
     abstract String getNetworkTitle();
 
     protected String getPrefix(Random random, RegistryEntry<Biome> biomeEntry, int y, boolean surface) {
+        String out = "";
+        var category = Biome.getCategory(biomeEntry);
+
+        if(random.nextFloat() < 0.334 && !surface &&  y < 100 && category != Biome.Category.UNDERGROUND && category != Biome.Category.NETHER) {
+            Collections.shuffle(deepPrefixPrefixes);
+            out = deepPrefixPrefixes.get(0) + " ";
+        }
+
         if(random.nextBoolean()) {
-            String out = "";
-
-            var biome = biomeEntry.getKey();
-
-            var category = Biome.getCategory(biomeEntry);
-            if(!surface && category != Biome.Category.UNDERGROUND && category != Biome.Category.NETHER) {
-                Collections.shuffle(deepPrefixPrefixes);
-                out = deepPrefixPrefixes.get(0) + " ";
-            }
-
             var prefixes = biomePrefixes.get(category);
             Collections.shuffle(prefixes);
             out += prefixes.get(0);
@@ -161,10 +167,20 @@ public abstract class TransferNetwork<T extends TransferNetwork<T>> {
             Collections.shuffle(randomPrefixes);
             for (Pair<Float, String> prefix : randomPrefixes) {
                 if(random.nextFloat() < prefix.getLeft())
-                    return prefix.getRight();
+                    return out + prefix.getRight();
             }
-            return randomPrefixes.get(randomPrefixes.size() - 1).getRight();
+
+            return out + randomPrefixes.get(randomPrefixes.size() - 1).getRight();
         }
+    }
+
+    protected String getAffix(Random random) {
+        Collections.shuffle(randomAffixes);
+        for (Pair<Float, String> affix : randomAffixes) {
+            if(random.nextFloat() < affix.getLeft())
+                return affix.getRight();
+        }
+        return randomAffixes.get(randomAffixes.size() - 1).getRight();
     }
 
     protected String getPerson(Random random) {
@@ -228,6 +244,7 @@ public abstract class TransferNetwork<T extends TransferNetwork<T>> {
 
     public NbtCompound save(NbtCompound nbt) {
         nbt.putUuid("networkId", networkId);
+        nbt.putString("name", name.toString());
         nbt.putLongArray("components", components.stream().mapToLong(BlockPos::asLong).toArray());
         nbt.putLongArray("invalid", invalidComponents.stream().mapToLong(BlockPos::asLong).toArray());
         nbt.putBoolean("revalidating", revalidationCached);
@@ -300,7 +317,7 @@ public abstract class TransferNetwork<T extends TransferNetwork<T>> {
         randomPrefixes.add(new Pair<>(0.2F, "Fucked Up"));
         randomPrefixes.add(new Pair<>(0.15F, "Gregged"));
         randomPrefixes.add(new Pair<>(0.15F, "Maiden"));
-        randomPrefixes.add(new Pair<>(0.15F, "Deflowered"));
+        randomPrefixes.add(new Pair<>(0.15F, "Tran gener"));
         randomPrefixes.add(new Pair<>(0.15F, "Pent-up"));
         randomPrefixes.add(new Pair<>(0.15F, "Femboy"));
         randomPrefixes.add(new Pair<>(0.15F, "Tomboy"));
@@ -367,6 +384,51 @@ public abstract class TransferNetwork<T extends TransferNetwork<T>> {
                 "Iron",
                 "Dwarf"
         );
+
+        randomAffixes = new ArrayList<>();
+        randomAffixes.add(new Pair<>(0.7F, " Sal"));
+        randomAffixes.add(new Pair<>(0.7F, " Imibis"));
+        randomAffixes.add(new Pair<>(0.7F, " Stal"));
+        randomAffixes.add(new Pair<>(0.7F, " of Path"));
+        randomAffixes.add(new Pair<>(0.7F, ", Overengineered"));
+        randomAffixes.add(new Pair<>(0.7F, " Belfry"));
+        randomAffixes.add(new Pair<>(0.6F, " Luna"));
+        randomAffixes.add(new Pair<>(0.6F, " Sol"));
+        randomAffixes.add(new Pair<>(0.5F, " Bell"));
+        randomAffixes.add(new Pair<>(0.5F, " o' Gold"));
+        randomAffixes.add(new Pair<>(0.5F, " of Harpies"));
+        randomAffixes.add(new Pair<>(0.5F, " Alto"));
+        randomAffixes.add(new Pair<>(0.5F, " o' Steel"));
+        randomAffixes.add(new Pair<>(0.5F, " o' Bronze"));
+        randomAffixes.add(new Pair<>(0.5F, " o' Iron"));
+        randomAffixes.add(new Pair<>(0.5F, ", hot hot so hot it could fry an egg"));
+        randomAffixes.add(new Pair<>(0.5F, " o' Drakeblood"));
+        randomAffixes.add(new Pair<>(0.5F, " of Brillyg, and the Slythy Toves"));
+        randomAffixes.add(new Pair<>(0.45F, " of Bloodstone"));
+        randomAffixes.add(new Pair<>(0.45F, " of Titanite"));
+        randomAffixes.add(new Pair<>(0.3F, " Seh"));
+        randomAffixes.add(new Pair<>(0.3F, " of Dragons"));
+        randomAffixes.add(new Pair<>(0.3F, " of Gods"));
+        randomAffixes.add(new Pair<>(0.3F, " of Demons"));
+        randomAffixes.add(new Pair<>(0.3F, " in White"));
+        randomAffixes.add(new Pair<>(0.3F, " in Black"));
+        randomAffixes.add(new Pair<>(0.25F, " of the Incubus"));
+        randomAffixes.add(new Pair<>(0.25F, " approaches the Roche limit"));
+        randomAffixes.add(new Pair<>(0.2F, " of the Scourge"));
+        randomAffixes.add(new Pair<>(0.2F, " the Redmane"));
+        randomAffixes.add(new Pair<>(0.2F, " the Vileblood"));
+        randomAffixes.add(new Pair<>(0.2F, " the Dreiton"));
+        randomAffixes.add(new Pair<>(0.2F, ", Grace-given"));
+        randomAffixes.add(new Pair<>(0.2F, ", Omen"));
+        randomAffixes.add(new Pair<>(0.2F, ", Forgiven"));
+        randomAffixes.add(new Pair<>(0.15F, ", Lost"));
+        randomAffixes.add(new Pair<>(0.15F, ", the Last"));
+        randomAffixes.add(new Pair<>(0.15F, " Cinder"));
+        randomAffixes.add(new Pair<>(0.15F, " Curse"));
+        randomAffixes.add(new Pair<>(0.15F, " Old Blood"));
+        randomAffixes.add(new Pair<>(0.1F, " of the vile Jabberwocky"));
+        randomAffixes.add(new Pair<>(0.1F, " o' you don't have the right, therefore you don't have the right o' you don't have the right"));
+        randomAffixes.add(new Pair<>(0.05F, " by Azazelthedemonlord"));
 
 
         people = new ArrayList<>();

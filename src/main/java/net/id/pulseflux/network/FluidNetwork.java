@@ -10,14 +10,15 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public class FluidNetwork extends TransferNetwork<FluidNetwork> implements SingleSlotStorage<FluidVariant> {
+
+    protected static final List<String> titles;
 
     public FluidNetwork(World world, UUID networkId) {
         super(world, networkId);
@@ -69,7 +70,8 @@ public class FluidNetwork extends TransferNetwork<FluidNetwork> implements Singl
     public List<Text> getNetworkInfo() {
         return List.of(
                 new LiteralText(" "),
-                new LiteralText("Fluid Network " + networkId).setStyle(Style.EMPTY.withColor(0xffb41f)),
+                new LiteralText("Fluid Network " + name.orElse("https://azazelthedemonlord.newgrounds.com/")).setStyle(Style.EMPTY.withColor(0xffb41f)),
+                new LiteralText("uuid - " + networkId).setStyle(Style.EMPTY.withColor(0xffb41f)),
                 new LiteralText("fluid - EMPTY").setStyle(Style.EMPTY.withColor(0xffb41f)),
                 new LiteralText("amount - 0mb").setStyle(Style.EMPTY.withColor(0xffb41f)),
                 new LiteralText("pressure - 0KPa").setStyle(Style.EMPTY.withColor(0xffb41f)),
@@ -110,6 +112,23 @@ public class FluidNetwork extends TransferNetwork<FluidNetwork> implements Singl
 
     @Override
     String getNetworkTitle() {
-        return "Waterworks";
+        Collections.shuffle(titles);
+        return titles.get(0);
+    }
+
+    static {
+        titles = new ArrayList<>();
+        titles.add("Waterworks");
+        titles.add("Pipeworks");
+        titles.add("Pipes");
+        titles.add("Aquaduct");
+        titles.add("Fluiduct");
+        titles.add("Ducts");
+        titles.add("Piping");
+        titles.add("Plumbing");
+        titles.add("Fluidway");
+        titles.add("Culvert");
+        titles.add("Canal");
+        titles.add("Pipeline");
     }
 }
