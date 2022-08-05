@@ -8,6 +8,8 @@ import net.id.pulseflux.PulseFlux;
 import net.id.pulseflux.block.transport.LogisticComponentBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.tag.BiomeTags;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
@@ -16,6 +18,7 @@ import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.level.LevelProperties;
+import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -38,7 +41,7 @@ public abstract class TransferNetwork<T extends TransferNetwork<T, V>, V extends
     protected static final List<Pair<Float, String>> randomPrefixes;
     protected static final List<Pair<Float, String>> randomAffixes;
     protected static final List<String> people;
-    protected static final Map<Biome.Category, List<String>> biomePrefixes;
+    //protected static final Map<Biome.Category, List<String>> biomePrefixes;
     protected static final List<String> deepPrefixPrefixes;
 
 
@@ -151,20 +154,20 @@ public abstract class TransferNetwork<T extends TransferNetwork<T, V>, V extends
 
     protected String getPrefix(Random random, RegistryEntry<Biome> biomeEntry, int y, boolean surface) {
         String out = "";
-        var category = Biome.getCategory(biomeEntry);
+        var nether = biomeEntry.isIn(BiomeTags.IS_NETHER);
 
-        if(random.nextFloat() < 0.334 && !surface &&  y < 100 && category != Biome.Category.UNDERGROUND && category != Biome.Category.NETHER) {
+        if(random.nextFloat() < 0.334 && !surface &&  y < 100 && !nether) {
             Collections.shuffle(deepPrefixPrefixes);
             out = deepPrefixPrefixes.get(0) + " ";
         }
 
-        if(random.nextBoolean()) {
-            var prefixes = biomePrefixes.get(category);
-            Collections.shuffle(prefixes);
-            out += prefixes.get(0);
-            return out;
-        }
-        else {
+        //if(random.nextBoolean()) {
+        //    var prefixes = biomePrefixes.get(category);
+        //    Collections.shuffle(prefixes);
+        //    out += prefixes.get(0);
+        //    return out;
+        //}
+        //else {
             Collections.shuffle(randomPrefixes);
             for (Pair<Float, String> prefix : randomPrefixes) {
                 if(random.nextFloat() < prefix.getLeft())
@@ -172,7 +175,7 @@ public abstract class TransferNetwork<T extends TransferNetwork<T, V>, V extends
             }
 
             return out + randomPrefixes.get(randomPrefixes.size() - 1).getRight();
-        }
+        //}
     }
 
     protected String getAffix(Random random) {
@@ -354,27 +357,27 @@ public abstract class TransferNetwork<T extends TransferNetwork<T, V>, V extends
         randomPrefixes.add(new Pair<>(0.01F, "Delirium with Fat Fucking Tits"));
         randomPrefixes.add(new Pair<>(0.01F, "High Incubus"));
 
-        var prefixBuilder = ImmutableMap.<Biome.Category, List<String>>builder();
-        prefixBuilder.put(Biome.Category.NONE, list("Odd", "Suspicious", "Wayward", "Estranged"));
-        prefixBuilder.put(Biome.Category.TAIGA, list("Wooded", "Frosty", "Coniferous", "Spiky", "Jolly", "Boreal", "Wintry"));
-        prefixBuilder.put(Biome.Category.EXTREME_HILLS, list("Mountanious", "Hill", "Crags", "Mound", "Rocky", "Hilltop"));
-        prefixBuilder.put(Biome.Category.JUNGLE, list("Tropical", "Monsoon", "Rainforest", "Overgrown", "Greenbound", "Lush", "Melon"));
-        prefixBuilder.put(Biome.Category.MESA, list("Western", "Mesa", "Baked", "Heat-struck", "Scorching", "Terracotta", "Plateau"));
-        prefixBuilder.put(Biome.Category.PLAINS, list("Flat", "Floodplain", "Praire", "Grassy", "Plains"));
-        prefixBuilder.put(Biome.Category.SAVANNA, list("Dry", "Subtropical", "Arid", "Rainless", "Acacia"));
-        prefixBuilder.put(Biome.Category.ICY, list("Shivering", "Pale", "Icy", "Frosty", "Snowy", "Cold"));
-        prefixBuilder.put(Biome.Category.THEEND, list("Ender", "Resonant", "Void", "Null", "Finis", "Chorus"));
-        prefixBuilder.put(Biome.Category.BEACH, list("Wayward", "Breezeful", "Coastal", "Coast", "Beach"));
-        prefixBuilder.put(Biome.Category.FOREST, list("Wooded", "Forest", "Grove", "Glade", "Thicket", "Leafy"));
-        prefixBuilder.put(Biome.Category.OCEAN, list("Oceanic", "Transatlantic", "Briny", "Blue", "Seasick", "Salty", "Sailing", "Ocean", "Sea"));
-        prefixBuilder.put(Biome.Category.DESERT, list("Dune", "Sandy", "Desert", "Blistering", "Dusty", "Cactus", "Bazaar"));
-        prefixBuilder.put(Biome.Category.RIVER, list("Stream", "Cool", "Wet", "River", "Creek", "Brook"));
-        prefixBuilder.put(Biome.Category.SWAMP, list("Mangrove", "Murky", "Muddy", "Cattail", "Brackish", "Bog"));
-        prefixBuilder.put(Biome.Category.MUSHROOM, list("Wooded", "Forest", "Grove", "Glade", "Thicket", "Leafy"));
-        prefixBuilder.put(Biome.Category.NETHER, list("Arduous", "Sintering", "Hellish", "Demon", "Succubus", "Incubus", "Blazing", "Sulfur", "Piglin", "Wither", "Hearth"));
-        prefixBuilder.put(Biome.Category.UNDERGROUND, list("Cavernous", "Cave", "Mithraeum", "Marble Forest", "Deep", "Subterranean", "Dripstone", "Mossy", "Echoing", "Depths", "Dwarven", "Tunnelling", "Bedrock", "Diamond", "Malachite", "Azurite", "Limonite", "Steel", "Gravel"));
-        prefixBuilder.put(Biome.Category.MOUNTAIN, list("Celeste", "High", "Altitude", "Peak", "Hewn", "Frozen", "Mountainous", "Range"));
-        biomePrefixes = prefixBuilder.build();
+        //var prefixBuilder = ImmutableMap.<TagKey<Biome>, List<String>>builder();
+        //prefixBuilder.put(Biome.Category.NONE, list("Odd", "Suspicious", "Wayward", "Estranged"));
+        //prefixBuilder.put(Biome.Category.TAIGA, list("Wooded", "Frosty", "Coniferous", "Spiky", "Jolly", "Boreal", "Wintry"));
+        //prefixBuilder.put(Biome.Category.EXTREME_HILLS, list("Mountanious", "Hill", "Crags", "Mound", "Rocky", "Hilltop"));
+        //prefixBuilder.put(Biome.Category.JUNGLE, list("Tropical", "Monsoon", "Rainforest", "Overgrown", "Greenbound", "Lush", "Melon"));
+        //prefixBuilder.put(Biome.Category.MESA, list("Western", "Mesa", "Baked", "Heat-struck", "Scorching", "Terracotta", "Plateau"));
+        //prefixBuilder.put(Biome.Category.PLAINS, list("Flat", "Floodplain", "Praire", "Grassy", "Plains"));
+        //prefixBuilder.put(Biome.Category.SAVANNA, list("Dry", "Subtropical", "Arid", "Rainless", "Acacia"));
+        //prefixBuilder.put(Biome.Category.ICY, list("Shivering", "Pale", "Icy", "Frosty", "Snowy", "Cold"));
+        //prefixBuilder.put(Biome.Category.THEEND, list("Ender", "Resonant", "Void", "Null", "Finis", "Chorus"));
+        //prefixBuilder.put(Biome.Category.BEACH, list("Wayward", "Breezeful", "Coastal", "Coast", "Beach"));
+        //prefixBuilder.put(Biome.Category.FOREST, list("Wooded", "Forest", "Grove", "Glade", "Thicket", "Leafy"));
+        //prefixBuilder.put(Biome.Category.OCEAN, list("Oceanic", "Transatlantic", "Briny", "Blue", "Seasick", "Salty", "Sailing", "Ocean", "Sea"));
+        //prefixBuilder.put(Biome.Category.DESERT, list("Dune", "Sandy", "Desert", "Blistering", "Dusty", "Cactus", "Bazaar"));
+        //prefixBuilder.put(Biome.Category.RIVER, list("Stream", "Cool", "Wet", "River", "Creek", "Brook"));
+        //prefixBuilder.put(Biome.Category.SWAMP, list("Mangrove", "Murky", "Muddy", "Cattail", "Brackish", "Bog"));
+        //prefixBuilder.put(Biome.Category.MUSHROOM, list("Wooded", "Forest", "Grove", "Glade", "Thicket", "Leafy"));
+        //prefixBuilder.put(Biome.Category.NETHER, list("Arduous", "Sintering", "Hellish", "Demon", "Succubus", "Incubus", "Blazing", "Sulfur", "Piglin", "Wither", "Hearth"));
+        //prefixBuilder.put(Biome.Category.UNDERGROUND, list("Cavernous", "Cave", "Mithraeum", "Marble Forest", "Deep", "Subterranean", "Dripstone", "Mossy", "Echoing", "Depths", "Dwarven", "Tunnelling", "Bedrock", "Diamond", "Malachite", "Azurite", "Limonite", "Steel", "Gravel"));
+        //prefixBuilder.put(Biome.Category.MOUNTAIN, list("Celeste", "High", "Altitude", "Peak", "Hewn", "Frozen", "Mountainous", "Range"));
+        //biomePrefixes = prefixBuilder.build();
 
         deepPrefixPrefixes = list(
                 "Deep",

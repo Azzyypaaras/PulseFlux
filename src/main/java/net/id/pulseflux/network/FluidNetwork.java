@@ -9,7 +9,6 @@ import net.id.pulseflux.block.transport.FluidPipeBlock;
 import net.id.pulseflux.blockentity.transport.FluidPipeEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
@@ -122,14 +121,14 @@ public class FluidNetwork extends TransferNetwork<FluidNetwork, FluidVariant> im
     @Override
     public List<Text> getNetworkInfo() {
         return List.of(
-                new LiteralText(" "),
-                new LiteralText("Fluid Network " + name.orElse("https://azazelthedemonlord.newgrounds.com/")).setStyle(Style.EMPTY.withColor(0xffb41f)),
-                new LiteralText("uuid - " + networkId).setStyle(Style.EMPTY.withColor(0xffb41f)),
-                new LiteralText("fluid - EMPTY").setStyle(Style.EMPTY.withColor(0xffb41f)),
-                new LiteralText("amount - 0mb").setStyle(Style.EMPTY.withColor(0xffb41f)),
-                new LiteralText("pressure - 0KPa").setStyle(Style.EMPTY.withColor(0xffb41f)),
-                new LiteralText("size - " + getConnectedComponents()).setStyle(Style.EMPTY.withColor(0xffb41f)),
-                new LiteralText(" ")
+                Text.literal(" "),
+                Text.literal("Fluid Network " + name.orElse("https://azazelthedemonlord.newgrounds.com/")).setStyle(Style.EMPTY.withColor(0xffb41f)),
+                Text.literal("uuid - " + networkId).setStyle(Style.EMPTY.withColor(0xffb41f)),
+                Text.literal("fluid - EMPTY").setStyle(Style.EMPTY.withColor(0xffb41f)),
+                Text.literal("amount - 0mb").setStyle(Style.EMPTY.withColor(0xffb41f)),
+                Text.literal("pressure - 0KPa").setStyle(Style.EMPTY.withColor(0xffb41f)),
+                Text.literal("size - " + getConnectedComponents()).setStyle(Style.EMPTY.withColor(0xffb41f)),
+                Text.literal(" ")
         );
     }
 
