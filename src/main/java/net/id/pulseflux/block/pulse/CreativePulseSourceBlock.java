@@ -1,8 +1,7 @@
 package net.id.pulseflux.block.pulse;
 
-import net.id.pulseflux.block.PFBlockWithEntity;
-import net.id.pulseflux.blockentity.pulse.CreativePulseSourceEntity;
-import net.id.pulseflux.blockentity.PFBlockEntity;
+import net.id.pulseflux.block.base.PFBlockWithEntity;
+import net.id.pulseflux.block.base.PFBlockEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -55,7 +54,7 @@ public class CreativePulseSourceBlock extends PFBlockWithEntity {
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new CreativePulseSourceEntity(pos, state);
+        return new CreativePulseSourceBlockEntity(pos, state);
     }
 
     @Override

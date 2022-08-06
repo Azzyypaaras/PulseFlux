@@ -1,4 +1,4 @@
-package net.id.pulseflux.block;
+package net.id.pulseflux.block.base;
 
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;

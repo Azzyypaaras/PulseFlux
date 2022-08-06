@@ -1,15 +1,11 @@
 package net.id.pulseflux.block.transport;
 
-import net.id.pulseflux.block.PFBlock;
-import net.id.pulseflux.block.PFBlockWithEntity;
+import net.id.pulseflux.block.base.PFBlockWithEntity;
 import net.id.pulseflux.network.NetworkManager;
 import net.id.pulseflux.network.TransferNetwork;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.UUID;

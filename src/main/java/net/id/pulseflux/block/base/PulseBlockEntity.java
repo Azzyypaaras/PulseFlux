@@ -1,4 +1,4 @@
-package net.id.pulseflux.blockentity;
+package net.id.pulseflux.block.base;
 
 import net.id.incubus_core.systems.Material;
 import net.id.pulseflux.systems.Polarity;

@@ -1,12 +1,13 @@
-package net.id.pulseflux.blockentity;
+package net.id.pulseflux.block;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.id.incubus_core.systems.DefaultMaterials;
-import net.id.pulseflux.blockentity.misc.TreetapEntity;
-import net.id.pulseflux.blockentity.pulse.BaseDiodeEntity;
-import net.id.pulseflux.blockentity.pulse.CreativePulseSourceEntity;
-import net.id.pulseflux.blockentity.transport.FluidPipeEntity;
+import net.id.pulseflux.block.misc.TreetapBlockEntity;
+import net.id.pulseflux.block.pulse.BaseDiodeBlockEntity;
+import net.id.pulseflux.block.pulse.CreativePulseSourceBlockEntity;
+import net.id.pulseflux.block.storage.ReservoirBlockEntity;
+import net.id.pulseflux.block.transport.FluidPipeBlockEntity;
 import net.id.pulseflux.systems.Lookups;
 import net.id.pulseflux.systems.PulseIo;
 import net.id.incubus_core.util.RegistryQueue;
@@ -25,20 +26,26 @@ public class PulseFluxBlockEntities {
     private static final Action<BlockEntityType<?>> pulseProvider = ((identifier, blockEntityType) -> Lookups.PULSE.registerForBlockEntity(((blockEntity, direction) -> (PulseIo) blockEntity), blockEntityType));
     private static final Action<BlockEntityType<?>> treetapStorage = ((identifier, blockEntityType) -> FluidStorage.SIDED.registerForBlockEntity(((blockEntity, direction) -> {
             if (direction == Direction.DOWN) {
-                return ((TreetapEntity) blockEntity).getTank();
+                return ((TreetapBlockEntity) blockEntity).getTank();
             }
             return null;
         }), blockEntityType));
 
 
-    public static final BlockEntityType<FluidPipeEntity> WOODEN_FLUID_PIPE_TYPE = add("wooden_fluid_pipe", create(FluidPipeEntity::new, WOODEN_FLUID_PIPE));
+    /**
+     * Storage
+     */
+
+    public static final BlockEntityType<ReservoirBlockEntity> RESERVOIR_TYPE = add("reservoir", create(ReservoirBlockEntity::new, RESERVOIR));
+
+    public static final BlockEntityType<FluidPipeBlockEntity> WOODEN_FLUID_PIPE_TYPE = add("wooden_fluid_pipe", create(FluidPipeBlockEntity::new, WOODEN_FLUID_PIPE));
 
 
-    public static final BlockEntityType<BaseDiodeEntity> WORKSHOP_DIODE_TYPE = add("workshop_diode", create(BaseDiodeEntity.factory(DefaultMaterials.IRON), WORKSHOP_DIODE), pulseProvider);
-    public static final BlockEntityType<CreativePulseSourceEntity> CREATIVE_PULSE_SOURCE_TYPE = add("creative_pulse_source", create(CreativePulseSourceEntity::new, CREATIVE_PULSE_SOURCE), pulseProvider);
+    public static final BlockEntityType<BaseDiodeBlockEntity> WORKSHOP_DIODE_TYPE = add("workshop_diode", create(BaseDiodeBlockEntity.factory(DefaultMaterials.IRON), WORKSHOP_DIODE), pulseProvider);
+    public static final BlockEntityType<CreativePulseSourceBlockEntity> CREATIVE_PULSE_SOURCE_TYPE = add("creative_pulse_source", create(CreativePulseSourceBlockEntity::new, CREATIVE_PULSE_SOURCE), pulseProvider);
 
 
-    public static final BlockEntityType<TreetapEntity> TREETAP_TYPE = add("treetap", create(TreetapEntity::new, TREETAP), treetapStorage);
+    public static final BlockEntityType<TreetapBlockEntity> TREETAP_TYPE = add("treetap", create(TreetapBlockEntity::new, TREETAP), treetapStorage);
     
     public static void init() {
         PulseFluxRegistryQueues.BLOCK_ENTITY_TYPE.register();

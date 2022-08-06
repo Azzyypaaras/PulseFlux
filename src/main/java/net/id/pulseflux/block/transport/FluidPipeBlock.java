@@ -3,7 +3,6 @@ package net.id.pulseflux.block.transport;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.id.incubus_core.systems.Material;
 import net.id.incubus_core.systems.MaterialProvider;
-import net.id.pulseflux.blockentity.transport.FluidPipeEntity;
 import net.id.pulseflux.network.FluidNetwork;
 import net.id.pulseflux.network.NetworkManager;
 import net.id.pulseflux.network.TransferNetwork;
@@ -33,25 +32,25 @@ public class FluidPipeBlock extends PipeBlock<FluidNetwork> implements MaterialP
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new FluidPipeEntity(pos, state);
+        return new FluidPipeBlockEntity(pos, state);
     }
 
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return FluidPipeEntity::tick;
+        return FluidPipeBlockEntity::tick;
     }
 
     @Override
     public void switchNetwork(BlockPos pos, FluidNetwork network, NetworkManager manager) {
-        if(manager.world.getBlockEntity(pos) instanceof FluidPipeEntity pipe) {
+        if(manager.world.getBlockEntity(pos) instanceof FluidPipeBlockEntity pipe) {
             pipe.trySwitchNetwork(network, manager);
         }
     }
 
     @Override
     public Optional<FluidNetwork> getParentNetwork(World world, BlockPos pos) {
-        return ((FluidPipeEntity) world.getBlockEntity(pos)).getParentNetwork();
+        return ((FluidPipeBlockEntity) world.getBlockEntity(pos)).getParentNetwork();
     }
 
     @Override

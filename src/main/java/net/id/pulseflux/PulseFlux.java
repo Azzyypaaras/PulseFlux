@@ -6,7 +6,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.api.ModInitializer;
 import net.id.pulseflux.arrp.PulseFluxRecipes;
 import net.id.pulseflux.block.PulseFluxBlocks;
-import net.id.pulseflux.blockentity.PulseFluxBlockEntities;
+import net.id.pulseflux.block.PulseFluxBlockEntities;
 import net.id.pulseflux.client.render.PulseFluxRenderers;
 import net.id.pulseflux.item.PulseFluxItems;
 import net.id.pulseflux.arrp.PulseFluxResources;
@@ -17,8 +17,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.SplittableRandom;
-
-import static net.id.pulseflux.arrp.PulseFluxResources.PACK;
 
 public class PulseFlux implements ModInitializer, ClientModInitializer {
 

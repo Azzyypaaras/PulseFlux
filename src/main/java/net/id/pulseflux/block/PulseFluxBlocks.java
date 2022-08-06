@@ -7,6 +7,7 @@ import net.id.pulseflux.arrp.TagGen;
 import net.id.pulseflux.block.misc.TreetapBlock;
 import net.id.pulseflux.block.pulse.BaseDiodeBlock;
 import net.id.pulseflux.block.pulse.CreativePulseSourceBlock;
+import net.id.pulseflux.block.storage.ReservoirBlock;
 import net.id.pulseflux.block.transport.FluidPipeBlock;
 import net.id.pulseflux.block.transport.PipeBlock;
 import net.id.pulseflux.registry.PulseFluxRegistryQueues;
@@ -47,6 +48,12 @@ public class PulseFluxBlocks {
      */
 
     public static final FluidPipeBlock WOODEN_FLUID_PIPE = add("wooden_fluid_pipe", new FluidPipeBlock(FabricBlockSettings.copyOf(Blocks.OAK_LOG), DefaultMaterials.IRON, 81000), translucentRenderLayer, generatePipeAssets, useWrench, selfDrop, generateLocale("Wooden Pipe"));
+
+    /**
+     * STORAGE
+     */
+
+    public static final ReservoirBlock RESERVOIR = add("reservoir", new ReservoirBlock(FabricBlockSettings.copyOf(Blocks.ANDESITE)));
 
 
     /**

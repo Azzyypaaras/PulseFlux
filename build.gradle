@@ -32,7 +32,7 @@ repositories {
 	maven {
 		url 'https://storage.googleapis.com/devan-maven/'
 	}
-
+	maven { url "https://maven.architectury.dev/" }
 	maven {
 		url = "https://jitpack.io"
 	}
@@ -57,7 +57,8 @@ dependencies {
 
 	// Dev env only
 	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
-	modImplementation "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
+	modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
+	modApi "dev.architectury:architectury-fabric:${project.architectury_version}"
 }
 
 processResources {

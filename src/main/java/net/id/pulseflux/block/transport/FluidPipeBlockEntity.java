@@ -1,27 +1,26 @@
-package net.id.pulseflux.blockentity.transport;
+package net.id.pulseflux.block.transport;
 
-import net.id.pulseflux.blockentity.PFBlockEntity;
-import net.id.pulseflux.blockentity.PulseFluxBlockEntities;
+import net.id.pulseflux.block.base.PFBlockEntity;
+import net.id.pulseflux.block.PulseFluxBlockEntities;
 import net.id.pulseflux.network.FluidNetwork;
 import net.id.pulseflux.network.NetworkManager;
 import net.id.pulseflux.network.TransferNetwork;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public class FluidPipeEntity extends PFBlockEntity {
+public class FluidPipeBlockEntity extends PFBlockEntity {
 
     @NotNull
     private Optional<FluidNetwork> parentNetwork = Optional.empty();
     @NotNull
     private Optional<UUID> networkId = Optional.empty();
 
-    public FluidPipeEntity(BlockPos pos, BlockState state) {
+    public FluidPipeBlockEntity(BlockPos pos, BlockState state) {
         super(PulseFluxBlockEntities.WOODEN_FLUID_PIPE_TYPE, pos, state);
     }
 

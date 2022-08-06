@@ -250,7 +250,7 @@ public abstract class TransferNetwork<T extends TransferNetwork<T, V>, V extends
 
     public NbtCompound save(NbtCompound nbt) {
         nbt.putUuid("networkId", networkId);
-        nbt.putString("name", name.toString());
+        name.ifPresent(str -> nbt.putString("name", str));
         nbt.putLongArray("components", components.stream().mapToLong(BlockPos::asLong).toArray());
         nbt.putLongArray("invalid", invalidComponents.stream().mapToLong(BlockPos::asLong).toArray());
         nbt.putBoolean("revalidating", revalidationCached);

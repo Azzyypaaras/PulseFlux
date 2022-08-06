@@ -2,9 +2,8 @@ package net.id.pulseflux.block.misc;
 
 import com.google.common.collect.ImmutableMap;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
-import net.id.pulseflux.block.PFBlockWithEntity;
+import net.id.pulseflux.block.base.PFBlockWithEntity;
 import net.id.pulseflux.block.transport.FluidPipeBlock;
-import net.id.pulseflux.blockentity.misc.TreetapEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -79,7 +78,7 @@ public class TreetapBlock extends PFBlockWithEntity {
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new TreetapEntity(pos, state);
+        return new TreetapBlockEntity(pos, state);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package net.id.pulseflux.blockentity;
+package net.id.pulseflux.block.base;
 
 import com.google.common.base.Preconditions;
 import net.id.pulseflux.PulseFlux;

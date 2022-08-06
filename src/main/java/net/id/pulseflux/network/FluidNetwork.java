@@ -6,7 +6,7 @@ import net.fabricmc.fabric.api.transfer.v1.storage.base.ResourceAmount;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.id.pulseflux.block.transport.FluidPipeBlock;
-import net.id.pulseflux.blockentity.transport.FluidPipeEntity;
+import net.id.pulseflux.block.transport.FluidPipeBlockEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Style;
@@ -60,7 +60,7 @@ public class FluidNetwork extends TransferNetwork<FluidNetwork, FluidVariant> im
                 .map(world::getBlockEntity)
                 .filter(Objects::nonNull)
                 .forEach(pipe -> {
-                    ((FluidPipeEntity) pipe).trySwitchNetwork((FluidNetwork) network, manager);
+                    ((FluidPipeBlockEntity) pipe).trySwitchNetwork((FluidNetwork) network, manager);
                     network.appendComponent(pipe.getPos());
                 });
         components.clear();
@@ -105,7 +105,7 @@ public class FluidNetwork extends TransferNetwork<FluidNetwork, FluidVariant> im
 
     @Override
     public boolean isComponentValid(BlockPos pos, BlockState state) {
-        return world.getBlockState(pos).getBlock() instanceof FluidPipeBlock && world.getBlockEntity(pos) instanceof FluidPipeEntity;
+        return world.getBlockState(pos).getBlock() instanceof FluidPipeBlock && world.getBlockEntity(pos) instanceof FluidPipeBlockEntity;
     }
 
     @Override

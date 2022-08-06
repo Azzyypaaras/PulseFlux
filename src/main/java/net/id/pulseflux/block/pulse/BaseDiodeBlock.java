@@ -1,9 +1,8 @@
 package net.id.pulseflux.block.pulse;
 
 import net.id.incubus_core.systems.DefaultMaterials;
-import net.id.pulseflux.block.PFBlockWithEntity;
-import net.id.pulseflux.blockentity.pulse.BaseDiodeEntity;
-import net.id.pulseflux.blockentity.PFBlockEntity;
+import net.id.pulseflux.block.base.PFBlockWithEntity;
+import net.id.pulseflux.block.base.PFBlockEntity;
 import net.id.pulseflux.util.LogisticsHelper;
 import net.id.pulseflux.util.RelativeObjectData;
 import net.minecraft.block.Block;
@@ -70,7 +69,7 @@ public class BaseDiodeBlock extends PFBlockWithEntity {
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new BaseDiodeEntity(DefaultMaterials.IRON, pos, state);
+        return new BaseDiodeBlockEntity(DefaultMaterials.IRON, pos, state);
     }
 
     @Override
