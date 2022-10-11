@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.id.pulseflux.network.TransferNetwork;
+import net.id.pulseflux.util.BlockReference;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -62,6 +63,58 @@ public abstract class PipeBlock<T extends TransferNetwork<T, ?>> extends Logisti
     @Override
     public @Nullable BlockState getPlacementState(ItemPlacementContext ctx) {
         var world = ctx.getWorld();
+        var reference = BlockReference.of(super.getPlacementState(ctx), ctx.getBlockPos());
+
+        if (reference.getState() == null || world == null)
+            return null;
+
+        var side = ctx.getSide();
+        var alt = ctx.getPlayer().isSneaking();
+
+        if (alt) {
+            var serverPeek = new ArrayList<Direction>();
+
+            for (Direction direction : DIRECTIONS) {
+                var offPos = reference.pos.offset(direction);
+
+                if (world.getBlockState(offPos).isOf(this)) {
+                    reference.setProperty(CONNECTIONS.get(direction), true);
+                }
+                else if (!world.isAir(offPos)) {
+                    serverPeek.add(direction);
+                }
+                else {
+                    reference.setProperty(CONNECTIONS.get(direction), false);
+                }
+            }
+
+            if(!world.isClient() && serverPeek.size() > 0) {
+                for (Direction peekDir : serverPeek) {
+                    var peek = lookup.find(world, reference.pos.offset(peekDir), peekDir);
+
+                    if (peek != null)
+                        reference.setProperty(CONNECTIONS.get(peekDir), true);
+                }
+            }
+
+            updateLinear(reference);
+
+            return reference.getState();
+        }
+
+        alignTo(reference, side, true);
+
+        return reference.getState();
+    }
+
+    /**
+     * This is my sleep paralysis demon
+     */
+
+    /*
+    @Override
+    public @Nullable BlockState getPlacementState(ItemPlacementContext ctx) {
+        var world = ctx.getWorld();
         var state = super.getPlacementState(ctx);
 
         if(world.isClient())
@@ -74,21 +127,21 @@ public abstract class PipeBlock<T extends TransferNetwork<T, ?>> extends Logisti
         var offBlock = world.getBlockState(offPos);
         var lookupResult = lookup.find(world, offPos, clickDirection.getOpposite());
 
-        if(state != null && ctx.canPlace()) {
-            if(offBlock.getBlock() instanceof PipeBlock pipe && pipe.lookup == lookup) {
+        if (state != null && ctx.canPlace()) {
+            if (offBlock.getBlock() instanceof PipeBlock pipe && pipe.lookup == lookup) {
                 state = state.with(LINEAR_AXIS, clickDirection.getAxis());
             }
-            else if(lookupResult != null) {
+            else if (lookupResult != null) {
                 if(lookupResult.supportsInsertion() || lookupResult.supportsExtraction()) {
                     state = state.with(LINEAR_AXIS, clickDirection.getAxis());
                 }
             }
-            else if(!ctx.getPlayer().isSneaking()){
+            else if (!ctx.getPlayer().isSneaking()) {
                 var facing = ctx.getPlayerLookDirection();
                 return alignTo(state, facing, true);
             }
 
-            if(ctx.getPlayer().isSneaking()) {
+            if (ctx.getPlayer().isSneaking()) {
                 int changes = 0;
                 boolean opposite = false;
 
@@ -106,7 +159,7 @@ public abstract class PipeBlock<T extends TransferNetwork<T, ?>> extends Logisti
                     }
                 }
 
-                if(changes > 0) {
+                if (changes > 0) {
                     return alignTo(state, clickDirection, false).with(CONNECTIONS.get(clickDirection.getOpposite()), opposite);
                 }
             }
@@ -115,51 +168,66 @@ public abstract class PipeBlock<T extends TransferNetwork<T, ?>> extends Logisti
         }
         return null;
     }
+     */
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         for (Direction dir : Direction.values()) {
-            if(state.get(CONNECTIONS.get(dir))) {
+            if (state.get(CONNECTIONS.get(dir))) {
                 var offPos = pos.offset(dir);
                 var offBlock = world.getBlockState(offPos);
-                if(offBlock.getBlock() instanceof PipeBlock pipe && pipe.lookup == lookup)
+                if (offBlock.getBlock() instanceof PipeBlock pipe && pipe.lookup == lookup)
                     notifyConnectionAttempt(world, offBlock, offPos, dir.getOpposite());
             }
         }
         super.onPlaced(world, pos, state, placer, itemStack);
     }
 
-    public static BlockState alignTo(BlockState state, Direction direction, boolean force) {
+    public static void alignTo(BlockReference reference, Direction direction, boolean force) {
         for (Direction dir : Direction.values()) {
             if(force) {
-                state = state.with(CONNECTIONS.get(dir), dir.getAxis() == direction.getAxis());
+                reference.setProperty(CONNECTIONS.get(dir), dir.getAxis() == direction.getAxis());
             }
             else if(dir.getAxis() == direction.getAxis()) {
-                state = state.with(CONNECTIONS.get(dir), true);
+                reference.setProperty(CONNECTIONS.get(dir), dir.getAxis() == direction.getAxis());
             }
         }
-        return state.with(LINEAR_AXIS, direction.getAxis());
+        reference.setProperty(LINEAR_AXIS, direction.getAxis());
     }
 
-    public void notifyConnectionAttempt(World world, BlockState state, BlockPos pos, Direction direction) {
-        if(state.get(STRAIGHT)) {
+    public static void updateLinear(BlockReference reference) {
+        var openDirections = new ArrayList<Direction>();
 
+        for (Direction direction : Direction.values()) {
+            if(reference.getProperty(CONNECTIONS.get(direction))) {
+                openDirections.add(direction);
+            }
+        }
+
+        if (openDirections.size() == 2 && openDirections.get(0).getAxis() == openDirections.get(1).getAxis()) {
+            reference.setProperty(STRAIGHT, true);
+            reference.setProperty(LINEAR_AXIS, openDirections.get(0).getAxis());
+            return;
+        }
+        reference.setProperty(STRAIGHT, false);
+    }
+
+    public void notifyConnectionAttempt(World world, BlockState state, BlockPos pos, Direction facing) {
+        if (state.get(STRAIGHT)) {
             var linearAxis = state.get(LINEAR_AXIS);
 
-            if(direction.getAxis() != linearAxis) {
+            if (facing.getAxis() != linearAxis) {
                 state = state.with(STRAIGHT, false);
 
                 for (Direction dir : Direction.values()) {
-                    if(dir.getAxis() == linearAxis) {
-                        var offPos = pos.offset(dir);
-                        var offState = world.getBlockState(offPos);
-                        if(!canConnectTo(world, offState, pos, dir)) {
-                            state = state.with(CONNECTIONS.get(dir), false);
-                        }
+                    var offPos = pos.offset(dir);
+                    var offState = world.getBlockState(offPos);
+                    if(!canConnectTo(world, offState, offPos, dir)) {
+                        state = state.with(CONNECTIONS.get(dir), false);
                     }
                 }
 
-                state = state.with(CONNECTIONS.get(direction), true).with(STRAIGHT, false);
+                state = state.with(CONNECTIONS.get(facing), true);
                 world.setBlockState(pos, state, Block.NOTIFY_ALL);
             }
         }
@@ -170,19 +238,19 @@ public abstract class PipeBlock<T extends TransferNetwork<T, ?>> extends Logisti
             for (Direction dir : Direction.values()) {
                 var offPos = pos.offset(dir);
                 var offState = world.getBlockState(offPos);
-                if(!canConnectTo(world, offState, pos, dir)) {
+                if(!canConnectTo(world, offState, offPos, dir)) {
                     state = state.with(CONNECTIONS.get(dir), false);
                 }
-                else if(dir != direction) {
+                else if(dir != facing) {
                     changedDirs.add(dir);
                 }
             }
 
-            if(changedDirs.size() == 1 && changedDirs.get(0).getAxis() == direction.getAxis()) {
-                state = state.with(STRAIGHT, true).with(LINEAR_AXIS, direction.getAxis());
+            if(changedDirs.size() == 1 && changedDirs.get(0).getAxis() == facing.getAxis()) {
+                state = state.with(STRAIGHT, true).with(LINEAR_AXIS, facing.getAxis());
             }
 
-            state = state.with(CONNECTIONS.get(direction), true);
+            state = state.with(CONNECTIONS.get(facing), true);
             world.setBlockState(pos, state, Block.NOTIFY_ALL);
         }
     }

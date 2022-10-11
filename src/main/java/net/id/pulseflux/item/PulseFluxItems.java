@@ -6,6 +6,7 @@ import net.id.pulseflux.PulseFlux;
 import net.id.pulseflux.arrp.DataGen;
 import net.id.pulseflux.block.PulseFluxBlocks;
 import net.id.pulseflux.item.debug.NetworkDebuggerItem;
+import net.id.pulseflux.item.tool.WrenchItem;
 import net.id.pulseflux.registry.PulseFluxRegistryQueues;
 import net.id.incubus_core.util.RegistryQueue.Action;
 import net.minecraft.block.Block;
@@ -26,6 +27,8 @@ public class PulseFluxItems {
     }
 
     private static final Action<Item> generateAssets = (id, item) -> createItemModel(id);
+    private static final Action<Item> generateHeldAssets = (id, item) -> createHeldItemModel(id);
+
     private static final Action<Item> generateBlockAssets = (id, item) -> createBlockItemModel(id);
 
 
@@ -48,6 +51,13 @@ public class PulseFluxItems {
 
 
     /**
+     * STORAGE
+     */
+
+    public static final BlockItem RESERVOIR = add("reservoir", PulseFluxBlocks.RESERVOIR, logistics);
+
+
+    /**
      * MACHINES
      */
 
@@ -66,6 +76,8 @@ public class PulseFluxItems {
     /**
      * TOOLS
      */
+
+    public static final WrenchItem MANUAL_WRENCH = add("manual_wrench", new WrenchItem(PulseFluxToolMaterials.HSLA_STEEL, 9, -3.1F, tools), generateHeldAssets, generateLocale("Workshop Hammer"));
 
     public static final NetworkDebuggerItem NETWORK_DEBUGGER_ITEM = add("network_debugging_tool", new NetworkDebuggerItem(tools), generateAssets, generateLocale("Transfer Network Debug Tool"));
 

@@ -1,5 +1,6 @@
 package net.id.pulseflux.network;
 
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.StoragePreconditions;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.ResourceAmount;
@@ -7,6 +8,7 @@ import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.id.pulseflux.block.transport.FluidPipeBlock;
 import net.id.pulseflux.block.transport.FluidPipeBlockEntity;
+import net.id.pulseflux.util.FluidTextHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Style;
@@ -31,6 +33,11 @@ public class FluidNetwork extends TransferNetwork<FluidNetwork, FluidVariant> im
 
     public FluidNetwork(World world, NbtCompound nbt) {
         super(world, nbt);
+        fluid = FluidVariant.fromNbt(nbt.getCompound("fluidVariant"));
+        droplets = nbt.getLong("droplets");
+        pressure = nbt.getLong("pressure");
+        volumeThreshold = nbt.getLong("volumeThreshold");
+        recalculatePressure();
     }
 
     @Override
@@ -48,9 +55,10 @@ public class FluidNetwork extends TransferNetwork<FluidNetwork, FluidVariant> im
 
         if(dropsPastThreshold <= 0) {
             pressure = 0;
+            return;
         }
 
-        pressure = Math.round((Math.pow(dropsPastThreshold, 1.75) * 20));
+        pressure = Math.round((Math.pow(dropsPastThreshold / FluidConstants.BUCKET, 1.75) * 20));
     }
 
     @Override
@@ -60,16 +68,24 @@ public class FluidNetwork extends TransferNetwork<FluidNetwork, FluidVariant> im
                 .map(world::getBlockEntity)
                 .filter(Objects::nonNull)
                 .forEach(pipe -> {
-                    ((FluidPipeBlockEntity) pipe).trySwitchNetwork((FluidNetwork) network, manager);
+                    ((FluidPipeBlockEntity) pipe).trySwitchNetwork(network, manager);
                     network.appendComponent(pipe.getPos());
                 });
+        if (network.isResourceBlank()) {
+            network.fluid = this.fluid;
+        }
+        network.droplets += this.droplets;
         components.clear();
     }
 
     @Override
     void processDescendants(List<TransferNetwork<?, ?>> castme, NetworkManager manager) {
+
+        if(components.size() <= 0 || castme.size() == 0)
+            return;
+
         var networks = (List<FluidNetwork>) (Object) castme;
-        if(networks.size() == 1) {
+        if (networks.size() == 1) {
             var network = networks.get(0);
             name.ifPresent(network::setName);
             network.droplets = droplets;
@@ -86,12 +102,17 @@ public class FluidNetwork extends TransferNetwork<FluidNetwork, FluidVariant> im
         for (int i = 0; i < networks.size(); i++) {
             var network = networks.get(i);
 
-            if(i == 0)
+            if (i == 0)
                 name.ifPresent(network::setName);
 
-            var percent = size / this.components.size();
+            var comp = network.components.size();
+
+            var percent = (double) size / comp;
             var splitDroplets = droplets / percent;
             network.droplets = (long) (i % 2 == 0 ? Math.floor(splitDroplets) : Math.ceil(splitDroplets));
+            if (network.droplets > 0) {
+                network.fluid = this.fluid;
+            }
             network.revalidateCapacity();
         }
     }
@@ -124,9 +145,9 @@ public class FluidNetwork extends TransferNetwork<FluidNetwork, FluidVariant> im
                 Text.literal(" "),
                 Text.literal("Fluid Network " + name.orElse("https://azazelthedemonlord.newgrounds.com/")).setStyle(Style.EMPTY.withColor(0xffb41f)),
                 Text.literal("uuid - " + networkId).setStyle(Style.EMPTY.withColor(0xffb41f)),
-                Text.literal("fluid - EMPTY").setStyle(Style.EMPTY.withColor(0xffb41f)),
-                Text.literal("amount - 0mb").setStyle(Style.EMPTY.withColor(0xffb41f)),
-                Text.literal("pressure - 0KPa").setStyle(Style.EMPTY.withColor(0xffb41f)),
+                Text.literal("fluid - " + this.getResource().getFluid().getDefaultState().getBlockState().getBlock().getName().getString()).setStyle(Style.EMPTY.withColor(0xffb41f)),
+                Text.literal("amount - " + FluidTextHelper.getUnicodeMillibuckets(droplets, true) + "ml").setStyle(Style.EMPTY.withColor(0xffb41f)),
+                Text.literal("pressure - " + pressure + "KPa").setStyle(Style.EMPTY.withColor(0xffb41f)),
                 Text.literal("size - " + getConnectedComponents()).setStyle(Style.EMPTY.withColor(0xffb41f)),
                 Text.literal(" ")
         );
@@ -144,7 +165,7 @@ public class FluidNetwork extends TransferNetwork<FluidNetwork, FluidVariant> im
 
             recalculatePressure();
         }
-        return 0;
+        return maxAmount;
     }
 
     @Override
@@ -206,6 +227,15 @@ public class FluidNetwork extends TransferNetwork<FluidNetwork, FluidVariant> im
         titles.add("Culvert");
         titles.add("Canal");
         titles.add("Pipeline");
+    }
+
+    @Override
+    public NbtCompound save(NbtCompound nbt) {
+        nbt.put("fluidVariant", fluid.toNbt());
+        nbt.putLong("droplets", droplets);
+        nbt.putLong("pressure", pressure);
+        nbt.putLong("volumeThreshold", volumeThreshold);
+        return super.save(nbt);
     }
 
     @Override

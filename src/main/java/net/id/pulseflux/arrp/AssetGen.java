@@ -16,6 +16,11 @@ public class AssetGen {
         PACK.addModel(JModel.model("minecraft:item/generated").textures(JModel.textures().layer0(id.toString())), id);
     }
 
+    public static void createHeldItemModel(Identifier item) {
+        var id = splicePath(item, "item");
+        PACK.addModel(JModel.model("minecraft:item/handheld").textures(JModel.textures().layer0(id.toString())), id);
+    }
+
     public static void createBlockItemModel(Identifier blockItem) {
         var parentId = splicePath(blockItem, "block");
         var id = splicePath(blockItem, "item");

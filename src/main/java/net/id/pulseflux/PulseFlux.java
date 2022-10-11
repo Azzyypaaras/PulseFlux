@@ -34,6 +34,7 @@ public class PulseFlux implements ModInitializer, ClientModInitializer {
 		PulseFluxBlocks.init();
 		PulseFluxItems.init();
 		PulseFluxBlockEntities.init();
+		PulseFluxBlockEntities.postInit();
 		PulseFluxRecipes.init();
 		PulseFluxResources.init();
 		Reconstructors.register();

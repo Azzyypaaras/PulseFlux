@@ -1,6 +1,5 @@
 package net.id.pulseflux.network;
 
-import com.google.common.collect.ImmutableMap;
 import net.fabricmc.fabric.api.transfer.v1.storage.TransferVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.ResourceAmount;
 import net.fabricmc.fabric.api.transfer.v1.transaction.base.SnapshotParticipant;
@@ -9,7 +8,6 @@ import net.id.pulseflux.block.transport.LogisticComponentBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.tag.BiomeTags;
-import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
@@ -232,7 +230,7 @@ public abstract class TransferNetwork<T extends TransferNetwork<T, V>, V extends
         return this.getClass() == other.getClass();
     }
 
-    public boolean isEmpty() {
+    public boolean isComponentless() {
         return components.isEmpty();
     }
 

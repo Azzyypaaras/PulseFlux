@@ -53,7 +53,7 @@ public class PulseFluxBlocks {
      * STORAGE
      */
 
-    public static final ReservoirBlock RESERVOIR = add("reservoir", new ReservoirBlock(FabricBlockSettings.copyOf(Blocks.ANDESITE)));
+    public static final ReservoirBlock RESERVOIR = add("reservoir", new ReservoirBlock(FabricBlockSettings.copyOf(Blocks.ANDESITE)), cutoutRenderLayer);
 
 
     /**

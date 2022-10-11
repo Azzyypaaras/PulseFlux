@@ -43,7 +43,7 @@ public class NetworkManager implements AutoSyncedComponent, ServerTickingCompone
     @Override
     public void serverTick() {
         for (TransferNetwork<?, ?> network : managedNetworks.values()) {
-            if(!network.isEmpty()) {
+            if(!network.isComponentless()) {
                 network.tick();
             }
             else if(network.removeIfEmpty()) {
@@ -174,8 +174,10 @@ public class NetworkManager implements AutoSyncedComponent, ServerTickingCompone
 
     @Override
     public void readFromNbt(NbtCompound tag) {
+        if(world.isClient())
+            return;
+
         int savedNetworks = tag.getInt("size");
-        LOG.info("Loading " + savedNetworks + " transfer networks");
 
         for (int i = 0; i < savedNetworks; i++) {
             var id = tag.getUuid("id_" + i);
@@ -191,6 +193,8 @@ public class NetworkManager implements AutoSyncedComponent, ServerTickingCompone
             managedNetworks.put(network.networkId, network);
             LOG.info("Network loaded: " + network);
         }
+
+        sync(world);
     }
 
     @Override
