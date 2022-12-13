@@ -5,6 +5,9 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
+import net.fabricmc.fabric.api.transfer.v1.storage.base.ResourceAmount;
+import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleVariantStorage;
+import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.id.pulseflux.block.base.PFBlockEntity;
 import net.id.pulseflux.block.PulseFluxBlockEntities;
 import net.id.pulseflux.network.FluidNetwork;
@@ -25,9 +28,12 @@ import java.util.stream.Collectors;
 public class FluidPipeBlockEntity extends PFBlockEntity {
 
     @NotNull
+    public final DelegatedFluidStorage tankReference = new DelegatedFluidStorage();
+    @NotNull
     private Optional<FluidNetwork> parentNetwork = Optional.empty();
     @NotNull
     private Optional<UUID> networkId = Optional.empty();
+
 
     public FluidPipeBlockEntity(BlockPos pos, BlockState state) {
         super(PulseFluxBlockEntities.WOODEN_FLUID_PIPE_TYPE, pos, state);
@@ -42,19 +48,18 @@ public class FluidPipeBlockEntity extends PFBlockEntity {
             return;
 
         if(parentNetwork.isPresent()) {
-            var network = parentNetwork.get();
             var storageConnections = getConnections(true, true);
 
             for (Direction connection : storageConnections) {
                 if (connection == Direction.DOWN) {
                     var storage = FluidStorage.SIDED.find(world, pos.offset(connection), connection);
                     if (storage != null)
-                        StorageUtil.move(network, storage, (FluidVariant) -> true, Long.MAX_VALUE, null);
+                        StorageUtil.move(tankReference, storage, (FluidVariant) -> true, Long.MAX_VALUE, null);
                 }
                 if (connection == Direction.UP) {
                     var storage = FluidStorage.SIDED.find(world, pos.offset(connection), connection);
                     if (storage != null)
-                        StorageUtil.move(storage, network, (FluidVariant) -> true, Long.MAX_VALUE, null);
+                        StorageUtil.move(storage, tankReference, (FluidVariant) -> true, Long.MAX_VALUE, null);
                 }
             }
         }
@@ -148,5 +153,63 @@ public class FluidPipeBlockEntity extends PFBlockEntity {
     @Override
     public void loadClient(NbtCompound nbt) {
         networkId = nbt.contains("parent") ? Optional.ofNullable(nbt.getUuid("parent")) : Optional.empty();
+    }
+
+    public class DelegatedFluidStorage extends SingleVariantStorage<FluidVariant> {
+
+        @Override
+        public long insert(FluidVariant insertedVariant, long maxAmount, TransactionContext transaction) {
+            return parentNetwork.map(fluidNetwork -> fluidNetwork.insert(insertedVariant, maxAmount, transaction)).orElse(maxAmount);
+        }
+
+        @Override
+        public long extract(FluidVariant extractedVariant, long maxAmount, TransactionContext transaction) {
+            return parentNetwork.map(fluidNetwork -> fluidNetwork.extract(extractedVariant, maxAmount, transaction)).orElse(0L);
+        }
+
+        @Override
+        public boolean isResourceBlank() {
+            return parentNetwork.map(fluidNetwork -> fluidNetwork.internalTank.isResourceBlank()).orElse(true);
+        }
+
+        @Override
+        protected FluidVariant getBlankVariant() {
+            return FluidVariant.blank();
+        }
+
+        @Override
+        protected long getCapacity(FluidVariant variant) {
+            return Long.MAX_VALUE;
+        }
+
+        @Override
+        public long getAmount() {
+            return parentNetwork.map(FluidNetwork::getDroplets).orElse(0L);
+        }
+
+        @Override
+        public FluidVariant getResource() {
+            return parentNetwork.map(FluidNetwork::getFluid).orElse(FluidVariant.blank());
+        }
+
+        @Override
+        protected ResourceAmount<FluidVariant> createSnapshot() {
+            return parentNetwork.map(fluidNetwork -> fluidNetwork.internalTank.createSnapshot()).orElse(new ResourceAmount<>(FluidVariant.blank(), 0));
+        }
+
+        @Override
+        protected void readSnapshot(ResourceAmount<FluidVariant> snapshot) {
+            parentNetwork.ifPresent(fluidNetwork -> fluidNetwork.internalTank.readSnapshot(snapshot));
+        }
+
+        @Override
+        protected boolean canInsert(FluidVariant variant) {
+            return parentNetwork.isPresent();
+        }
+
+        @Override
+        protected boolean canExtract(FluidVariant variant) {
+            return parentNetwork.isPresent();
+        }
     }
 }

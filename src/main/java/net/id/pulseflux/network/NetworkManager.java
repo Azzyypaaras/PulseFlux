@@ -24,7 +24,7 @@ import static net.minecraft.client.render.WorldRenderer.DIRECTIONS;
 public class NetworkManager implements AutoSyncedComponent, ServerTickingComponent {
 
     public final World world;
-    public final Object2ObjectOpenHashMap<UUID, TransferNetwork<?, ?>> managedNetworks = new Object2ObjectOpenHashMap<>(32);
+    public final Object2ObjectOpenHashMap<UUID, TransferNetwork<?>> managedNetworks = new Object2ObjectOpenHashMap<>(32);
 
     public NetworkManager(World world) {
         this.world = world;
@@ -42,7 +42,9 @@ public class NetworkManager implements AutoSyncedComponent, ServerTickingCompone
 
     @Override
     public void serverTick() {
-        for (TransferNetwork<?, ?> network : managedNetworks.values()) {
+        var managed = managedNetworks.clone();
+
+        for (TransferNetwork<?> network : managed.values()) {
             if(!network.isComponentless()) {
                 network.tick();
             }
@@ -58,16 +60,25 @@ public class NetworkManager implements AutoSyncedComponent, ServerTickingCompone
 
                 Queue<BlockPos> nextGen = new LinkedList<>();
                 Set<BlockPos> traversedBlocks = new HashSet<>();
-                List<TransferNetwork<?, ?>> newNetworks = new ArrayList<>();
+                List<TransferNetwork<?>> newNetworks = new ArrayList<>();
+                List<InvalidatedComponent> exceptionalComponents = new ArrayList<>();
 
-                for (BlockPos invalidatedComponent : network.invalidComponents) {
-                    traversedBlocks.add(invalidatedComponent);
+                for (InvalidatedComponent invalidatedComponent : network.invalidComponents) {
+
+                    var invalidPos = invalidatedComponent.component();
+                    var reason = invalidatedComponent.reason();
+
+                    if (reason == InvalidatedComponent.Reason.WRENCHED) {
+                        exceptionalComponents.add(invalidatedComponent);
+                    }
+
+                    traversedBlocks.add(invalidPos);
 
                     for (Direction baseDir : DIRECTIONS) {
 
-                        BlockPos start = invalidatedComponent.offset(baseDir);
-                        traversedBlocks.add(start);
+                        BlockPos start = invalidPos.offset(baseDir);
                         nextGen.add(start);
+                        traversedBlocks.add(start);
 
                         while(!nextGen.isEmpty()) {
                             BlockPos next = nextGen.poll();
@@ -75,7 +86,7 @@ public class NetworkManager implements AutoSyncedComponent, ServerTickingCompone
                             Block block = state.getBlock();
 
                             if(block instanceof LogisticComponentBlock component && network.isComponentValid(next, state)) {
-                                TransferNetwork<?, ?> newNetwork = joinOrCreateNetwork(world, next);
+                                TransferNetwork<?> newNetwork = joinOrCreateNetwork(world, next);
                                 component.switchNetwork(next, newNetwork, this);
 
                                 if(!managedNetworks.containsValue(newNetwork)) {
@@ -99,16 +110,31 @@ public class NetworkManager implements AutoSyncedComponent, ServerTickingCompone
                     }
                 }
 
+                for (InvalidatedComponent exception : exceptionalComponents) {
+                    if (exception.reason() == InvalidatedComponent.Reason.WRENCHED) {
+                        var pos = exception.component();
+
+                        if (world.getBlockState(pos).getBlock() instanceof LogisticComponentBlock componentBlock) {
+                            var exceptionalNetwork = joinOrCreateNetwork(world, pos);
+                            componentBlock.switchNetwork(pos, exceptionalNetwork, this);
+
+                            if(!newNetworks.contains(exceptionalNetwork)) {
+                                newNetworks.add(exceptionalNetwork);
+                            }
+                        }
+                    }
+                }
+
                 network.processDescendants(newNetworks, this);
             }
         }
     }
 
-    public <T extends TransferNetwork<T, ?>> Optional<T> tryFetchNetwork(UUID networkId) {
+    public <T extends TransferNetwork<T>> Optional<T> tryFetchNetwork(UUID networkId) {
         return (Optional<T>) Optional.ofNullable(managedNetworks.get(networkId));
     }
 
-    public @NotNull <T extends TransferNetwork<T, ?>> T joinOrCreateNetwork(@NotNull World world, @NotNull BlockPos pos) {
+    public @NotNull <T extends TransferNetwork<T>> T joinOrCreateNetwork(@NotNull World world, @NotNull BlockPos pos) {
 
         Iterator<UUID> networkIds = managedNetworks.keySet().iterator();
         List<T> adjNetworks = new ArrayList<>();
@@ -183,7 +209,7 @@ public class NetworkManager implements AutoSyncedComponent, ServerTickingCompone
             var id = tag.getUuid("id_" + i);
             var reconstructor = Reconstructors.getReconstructor(Identifier.tryParse(tag.getString("reconstructor_" + i)));
 
-            TransferNetwork<?, ?> network = reconstructor.assemble(world, id, tag.getCompound("networkData_" + i));
+            TransferNetwork<?> network = reconstructor.assemble(world, id, tag.getCompound("networkData_" + i));
 
             if(network.getConnectedComponents() < 1 && network.removeIfEmpty()) {
                 LOG.error("Network " + network.networkId.toString() + " is empty, skipping!");

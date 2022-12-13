@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 import java.util.Optional;
 import java.util.UUID;
 
-public abstract class LogisticComponentBlock<T extends TransferNetwork<T, ?>> extends PFBlockWithEntity {
+public abstract class LogisticComponentBlock<T extends TransferNetwork<T>> extends PFBlockWithEntity {
 
     public LogisticComponentBlock(Settings settings, boolean loggable) {
         super(settings, loggable);
@@ -20,7 +20,7 @@ public abstract class LogisticComponentBlock<T extends TransferNetwork<T, ?>> ex
         return false;
     }
 
-    public abstract boolean isCompatibleWith(TransferNetwork<?, ?> network);
+    public abstract boolean isCompatibleWith(TransferNetwork<?> network);
 
     public abstract void switchNetwork(BlockPos pos, T network, NetworkManager manager);
 

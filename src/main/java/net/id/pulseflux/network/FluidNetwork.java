@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.StoragePreconditions;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.ResourceAmount;
-import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage;
+import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleVariantStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.id.pulseflux.block.transport.FluidPipeBlock;
 import net.id.pulseflux.block.transport.FluidPipeBlockEntity;
@@ -17,11 +17,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-public class FluidNetwork extends TransferNetwork<FluidNetwork, FluidVariant> implements SingleSlotStorage<FluidVariant> {
+public class FluidNetwork extends TransferNetwork<FluidNetwork> {
 
-    protected FluidVariant fluid = FluidVariant.blank();
-    protected long droplets;
+    public final NetworkTank internalTank = new NetworkTank();
     protected long pressure;
     protected long volumeThreshold;
 
@@ -33,8 +33,8 @@ public class FluidNetwork extends TransferNetwork<FluidNetwork, FluidVariant> im
 
     public FluidNetwork(World world, NbtCompound nbt) {
         super(world, nbt);
-        fluid = FluidVariant.fromNbt(nbt.getCompound("fluidVariant"));
-        droplets = nbt.getLong("droplets");
+        internalTank.variant = FluidVariant.fromNbt(nbt.getCompound("fluidVariant"));
+        internalTank.amount = nbt.getLong("droplets");
         pressure = nbt.getLong("pressure");
         volumeThreshold = nbt.getLong("volumeThreshold");
         recalculatePressure();
@@ -51,7 +51,7 @@ public class FluidNetwork extends TransferNetwork<FluidNetwork, FluidVariant> im
     }
 
     public void recalculatePressure() {
-        long dropsPastThreshold = droplets - volumeThreshold;
+        long dropsPastThreshold = getDroplets() - volumeThreshold;
 
         if(dropsPastThreshold <= 0) {
             pressure = 0;
@@ -62,7 +62,7 @@ public class FluidNetwork extends TransferNetwork<FluidNetwork, FluidVariant> im
     }
 
     @Override
-    void yieldTo(FluidNetwork network, NetworkManager manager) {
+    public void yieldTo(FluidNetwork network, NetworkManager manager) {
         manager.managedNetworks.remove(networkId);
         components.stream()
                 .map(world::getBlockEntity)
@@ -71,24 +71,26 @@ public class FluidNetwork extends TransferNetwork<FluidNetwork, FluidVariant> im
                     ((FluidPipeBlockEntity) pipe).trySwitchNetwork(network, manager);
                     network.appendComponent(pipe.getPos());
                 });
-        if (network.isResourceBlank()) {
-            network.fluid = this.fluid;
+        if (network.isFluidBlank()) {
+            network.setFluid(this.getFluid());
         }
-        network.droplets += this.droplets;
+        network.setDroplets(network.getDroplets() + this.getDroplets());
         components.clear();
     }
 
     @Override
-    void processDescendants(List<TransferNetwork<?, ?>> castme, NetworkManager manager) {
+    void processDescendants(List<TransferNetwork<?>> castme, NetworkManager manager) {
 
-        if(components.size() <= 0 || castme.size() == 0)
+        castme = castme.stream().filter(network -> network.components.size() > 0).collect(Collectors.toList());
+
+        if(components.size() == 0 || castme.size() == 0)
             return;
 
         var networks = (List<FluidNetwork>) (Object) castme;
         if (networks.size() == 1) {
             var network = networks.get(0);
             name.ifPresent(network::setName);
-            network.droplets = droplets;
+            network.setDroplets(this.getDroplets());
             network.revalidateCapacity();
             return;
         }
@@ -108,10 +110,10 @@ public class FluidNetwork extends TransferNetwork<FluidNetwork, FluidVariant> im
             var comp = network.components.size();
 
             var percent = (double) size / comp;
-            var splitDroplets = droplets / percent;
-            network.droplets = (long) (i % 2 == 0 ? Math.floor(splitDroplets) : Math.ceil(splitDroplets));
-            if (network.droplets > 0) {
-                network.fluid = this.fluid;
+            var splitDroplets = getDroplets() / percent;
+            network.setDroplets((long) (i % 2 == 0 ? Math.floor(splitDroplets) : Math.ceil(splitDroplets)));
+            if (network.getDroplets() > 0) {
+                network.setFluid(this.getFluid());
             }
             network.revalidateCapacity();
         }
@@ -145,66 +147,40 @@ public class FluidNetwork extends TransferNetwork<FluidNetwork, FluidVariant> im
                 Text.literal(" "),
                 Text.literal("Fluid Network " + name.orElse("https://azazelthedemonlord.newgrounds.com/")).setStyle(Style.EMPTY.withColor(0xffb41f)),
                 Text.literal("uuid - " + networkId).setStyle(Style.EMPTY.withColor(0xffb41f)),
-                Text.literal("fluid - " + this.getResource().getFluid().getDefaultState().getBlockState().getBlock().getName().getString()).setStyle(Style.EMPTY.withColor(0xffb41f)),
-                Text.literal("amount - " + FluidTextHelper.getUnicodeMillibuckets(droplets, true) + "ml").setStyle(Style.EMPTY.withColor(0xffb41f)),
+                Text.literal("fluid - " + this.getFluid().getFluid().getDefaultState().getBlockState().getBlock().getName().getString()).setStyle(Style.EMPTY.withColor(0xffb41f)),
+                Text.literal("amount - " + FluidTextHelper.getUnicodeMillibuckets(getDroplets(), true) + "ml").setStyle(Style.EMPTY.withColor(0xffb41f)),
                 Text.literal("pressure - " + pressure + "KPa").setStyle(Style.EMPTY.withColor(0xffb41f)),
                 Text.literal("size - " + getConnectedComponents()).setStyle(Style.EMPTY.withColor(0xffb41f)),
                 Text.literal(" ")
         );
     }
 
-    @Override
     public long insert(FluidVariant insertedFluid, long maxAmount, TransactionContext transaction) {
-        StoragePreconditions.notBlankNotNegative(insertedFluid, maxAmount);
-        maxAmount = Math.min(maxAmount, Long.MAX_VALUE - droplets);
-
-        if(maxAmount > 0 && (fluid.isBlank() || insertedFluid.equals(fluid))) {
-            updateSnapshots(transaction);
-            fluid = insertedFluid;
-            droplets += maxAmount;
-
-            recalculatePressure();
-        }
-        return maxAmount;
+        return internalTank.insert(insertedFluid, maxAmount, transaction);
     }
 
-    @Override
     public long extract(FluidVariant requestedFluid, long maxAmount, TransactionContext transaction) {
-        StoragePreconditions.notBlankNotNegative(requestedFluid, maxAmount);
-
-        if(droplets > 0 && maxAmount > 0 && requestedFluid.equals(fluid)) {
-            updateSnapshots(transaction);
-            var extracted = maxAmount + Math.min(droplets - maxAmount, 0);
-            droplets -= extracted;
-
-            if(droplets == 0)
-                fluid = FluidVariant.blank();
-
-            recalculatePressure();
-            return extracted;
-        }
-
-        return 0;
+        return internalTank.extract(requestedFluid, maxAmount, transaction);
     }
 
-    @Override
-    public boolean isResourceBlank() {
-        return fluid.isBlank();
+    public long getDroplets() {
+        return internalTank.amount;
     }
 
-    @Override
-    public FluidVariant getResource() {
-        return fluid;
+    public void setDroplets(long amount) {
+        internalTank.amount = amount;
     }
 
-    @Override
-    public long getAmount() {
-        return droplets;
+    public boolean isFluidBlank() {
+        return internalTank.isResourceBlank();
     }
 
-    @Override
-    public long getCapacity() {
-        return Long.MAX_VALUE;
+    public FluidVariant getFluid() {
+        return internalTank.getResource();
+    }
+
+    public void setFluid(FluidVariant fluid) {
+        internalTank.variant = fluid;
     }
 
     @Override
@@ -231,21 +207,68 @@ public class FluidNetwork extends TransferNetwork<FluidNetwork, FluidVariant> im
 
     @Override
     public NbtCompound save(NbtCompound nbt) {
-        nbt.put("fluidVariant", fluid.toNbt());
-        nbt.putLong("droplets", droplets);
+        nbt.put("fluidVariant", getFluid().toNbt());
+        nbt.putLong("droplets", getDroplets());
         nbt.putLong("pressure", pressure);
         nbt.putLong("volumeThreshold", volumeThreshold);
         return super.save(nbt);
     }
 
-    @Override
-    protected ResourceAmount<FluidVariant> createSnapshot() {
-        return new ResourceAmount<>(fluid, droplets);
-    }
+    public class NetworkTank extends SingleVariantStorage<FluidVariant> {
 
-    @Override
-    protected void readSnapshot(ResourceAmount<FluidVariant> snapshot) {
-        fluid = snapshot.resource();
-        droplets = snapshot.amount();
+        @Override
+        protected FluidVariant getBlankVariant() {
+            return FluidVariant.blank();
+        }
+
+        @Override
+        public long insert(FluidVariant insertedFluid, long maxAmount, TransactionContext transaction) {
+            StoragePreconditions.notBlankNotNegative(insertedFluid, maxAmount);
+            maxAmount = Math.min(maxAmount, Long.MAX_VALUE - amount);
+
+            if (maxAmount > 0 && (variant.isBlank() || insertedFluid.equals(variant))) {
+                updateSnapshots(transaction);
+                variant = insertedFluid;
+                amount += maxAmount;
+
+                recalculatePressure();
+            }
+            return maxAmount;
+        }
+
+        @Override
+        public long extract(FluidVariant requestedFluid, long maxAmount, TransactionContext transaction) {
+            StoragePreconditions.notBlankNotNegative(requestedFluid, maxAmount);
+
+            if(amount > 0 && maxAmount > 0 && requestedFluid.equals(variant)) {
+                updateSnapshots(transaction);
+                var extracted = maxAmount + Math.min(amount - maxAmount, 0);
+                amount -= extracted;
+
+                if(amount == 0)
+                    variant = FluidVariant.blank();
+
+                recalculatePressure();
+                return extracted;
+            }
+
+            return 0;
+        }
+
+        @Override
+        public ResourceAmount<FluidVariant> createSnapshot() {
+            return super.createSnapshot();
+        }
+
+        @Override
+        public void readSnapshot(ResourceAmount<FluidVariant> snapshot) {
+            super.readSnapshot(snapshot);
+            recalculatePressure();
+        }
+
+        @Override
+        protected long getCapacity(FluidVariant variant) {
+            return Long.MAX_VALUE;
+        }
     }
 }

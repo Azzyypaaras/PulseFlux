@@ -1,10 +1,8 @@
 package net.id.pulseflux.network;
 
-import net.id.incubus_core.util.RegistryQueue;
 import net.id.pulseflux.network.TransferNetwork.NetworkReconstructor;
 import net.id.pulseflux.registry.PulseFluxRegistries;
 import net.id.pulseflux.registry.PulseFluxRegistryQueues;
-import net.minecraft.block.Block;
 import net.minecraft.util.Identifier;
 
 import static net.id.pulseflux.PulseFlux.locate;
@@ -25,7 +23,7 @@ public class Reconstructors {
         return PulseFluxRegistries.NETWORK_RECONSTRUCTOR.get(id);
     }
 
-    private static <N extends TransferNetwork<N, ?>> NetworkReconstructor<N> add(String id, NetworkReconstructor<N> reconstructor) {
+    private static <N extends TransferNetwork<N>> NetworkReconstructor<N> add(String id, NetworkReconstructor<N> reconstructor) {
         return PulseFluxRegistryQueues.NETWORK_RECONSTRUCTOR.add(locate(id), reconstructor);
     }
 }

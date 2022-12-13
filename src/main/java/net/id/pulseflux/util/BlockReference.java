@@ -29,6 +29,14 @@ public final class BlockReference {
         return new BlockReference(world.getBlockState(pos), Optional.ofNullable(world.getBlockEntity(pos)), pos);
     }
 
+    public BlockReference appendBE(BlockEntity entity) {
+        return new BlockReference(state, Optional.of(entity), pos);
+    }
+
+    public BlockReference tryRecreateWithBE(World world) {
+        return new BlockReference(state, Optional.ofNullable(world.getBlockEntity(pos)), pos);
+    }
+
     public <V extends Comparable<V>> void setProperty(Property<V> property, V value) {
         state = state.with(property, value);
     }

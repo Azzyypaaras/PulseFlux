@@ -24,10 +24,10 @@ import java.util.stream.Collectors;
 
 import static net.id.pulseflux.util.Shorthands.*;
 
-public abstract class TransferNetwork<T extends TransferNetwork<T, V>, V extends TransferVariant<?>> extends SnapshotParticipant<ResourceAmount<V>> {
+public abstract class TransferNetwork<T extends TransferNetwork<T>> {
 
     public final UUID networkId;
-    public final List<BlockPos> invalidComponents;
+    public final List<InvalidatedComponent> invalidComponents;
 
     protected final List<BlockPos> components;
     protected final World world;
@@ -57,7 +57,15 @@ public abstract class TransferNetwork<T extends TransferNetwork<T, V>, V extends
         this.networkId = nbt.getUuid("networkId");
         name = Optional.ofNullable(nbt.getString("name"));
         components = Arrays.stream(nbt.getLongArray("components")).mapToObj(BlockPos::fromLong).collect(Collectors.toList());
-        invalidComponents = Arrays.stream(nbt.getLongArray("invalid")).mapToObj(BlockPos::fromLong).collect(Collectors.toList());
+
+        invalidComponents = new ArrayList<>();
+        var invalidPositions = Arrays.stream(nbt.getLongArray("invalid")).mapToObj(BlockPos::fromLong).collect(Collectors.toList());
+        var invalidReasons = Arrays.stream(nbt.getIntArray("reasons")).mapToObj(reason -> InvalidatedComponent.Reason.values()[reason]).collect(Collectors.toList());
+
+        for (int i = 0; i < invalidPositions.size(); i++) {
+            invalidComponents.add(new InvalidatedComponent(invalidReasons.get(i), invalidPositions.get(i)));
+        }
+
         revalidationCached = nbt.getBoolean("revalidating");
     }
 
@@ -98,12 +106,20 @@ public abstract class TransferNetwork<T extends TransferNetwork<T, V>, V extends
                 }
 
                 if(adjacency > 1) {
-                    invalidComponents.add(component);
+                    invalidComponents.add(new InvalidatedComponent(InvalidatedComponent.Reason.REMOVED, component));
                 }
 
                 components.remove(component);
             }
         }
+    }
+
+    public void invalidateComponent(BlockPos pos, InvalidatedComponent.Reason reason) {
+        if (!components.contains(pos)) {
+            throw new IllegalStateException("Can't remove a component that doesn't exist!");
+        }
+
+        invalidComponents.add(new InvalidatedComponent(reason, pos));
     }
 
     public void  setName(@NotNull String newName) {
@@ -209,7 +225,7 @@ public abstract class TransferNetwork<T extends TransferNetwork<T, V>, V extends
 
     abstract void yieldTo(T network, NetworkManager manager);
 
-    abstract void processDescendants(List<TransferNetwork<?, ?>> networks, NetworkManager manager);
+    abstract void processDescendants(List<TransferNetwork<?>> networks, NetworkManager manager);
 
     public void appendComponent(BlockPos pos) {
         if(!components.contains(pos)) {
@@ -226,7 +242,7 @@ public abstract class TransferNetwork<T extends TransferNetwork<T, V>, V extends
 
     public abstract boolean isComponentValid(BlockPos pos, BlockState state);
 
-    public boolean isSameKind(TransferNetwork<?, ?> other) {
+    public boolean isSameKind(TransferNetwork<?> other) {
         return this.getClass() == other.getClass();
     }
 
@@ -250,7 +266,13 @@ public abstract class TransferNetwork<T extends TransferNetwork<T, V>, V extends
         nbt.putUuid("networkId", networkId);
         name.ifPresent(str -> nbt.putString("name", str));
         nbt.putLongArray("components", components.stream().mapToLong(BlockPos::asLong).toArray());
-        nbt.putLongArray("invalid", invalidComponents.stream().mapToLong(BlockPos::asLong).toArray());
+
+        var invalidPositions = invalidComponents.stream().map(InvalidatedComponent::component);
+        var invalidReasons = invalidComponents.stream().map(InvalidatedComponent::reason);
+
+        nbt.putLongArray("invalid", invalidPositions.mapToLong(BlockPos::asLong).toArray());
+        nbt.putIntArray("reasons", invalidReasons.mapToInt(Enum::ordinal).toArray());
+
         nbt.putBoolean("revalidating", revalidationCached);
         return nbt;
     }
@@ -267,7 +289,7 @@ public abstract class TransferNetwork<T extends TransferNetwork<T, V>, V extends
     }
 
     @FunctionalInterface
-    public interface NetworkReconstructor<N extends TransferNetwork<N, ?>> {
+    public interface NetworkReconstructor<N extends TransferNetwork<N>> {
         N assemble(World world, UUID networkId, NbtCompound nbt);
     }
 

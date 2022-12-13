@@ -1,22 +1,31 @@
 package net.id.pulseflux.block.transport;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
+import net.id.pulseflux.item.PulseFluxItems;
 import net.id.pulseflux.network.TransferNetwork;
 import net.id.pulseflux.util.BlockReference;
+import net.id.pulseflux.util.Shorthands;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -24,14 +33,16 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-public abstract class PipeBlock<T extends TransferNetwork<T, ?>> extends LogisticComponentBlock<T> {
+public abstract class PipeBlock<T extends TransferNetwork<T>> extends LogisticComponentBlock<T> {
 
     public static final EnumProperty<Direction.Axis> LINEAR_AXIS = Properties.AXIS;
     public static final BooleanProperty STRAIGHT = BooleanProperty.of("straight");
     public static final Map<Direction, BooleanProperty> CONNECTIONS;
     public static final Map<Direction, VoxelShape> SHAPES;
+    public static final List<Intercept> INTERCEPTS;
     public static final VoxelShape HEART = Block.createCuboidShape(5, 5, 5, 11, 11 ,11);
 
     public final BlockApiLookup<? extends Storage<?>, Direction> lookup;
@@ -107,68 +118,42 @@ public abstract class PipeBlock<T extends TransferNetwork<T, ?>> extends Logisti
         return reference.getState();
     }
 
-    /**
-     * This is my sleep paralysis demon
-     */
-
-    /*
     @Override
-    public @Nullable BlockState getPlacementState(ItemPlacementContext ctx) {
-        var world = ctx.getWorld();
-        var state = super.getPlacementState(ctx);
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        var tool = player.getStackInHand(hand);
+        var reference = BlockReference.of(state, pos);
 
-        if(world.isClient())
-            return state;
+        if (!tool.isOf(PulseFluxItems.MANUAL_WRENCH))
+            return ActionResult.PASS;
 
-        var clickDirection = ctx.getPlacementDirections()[0];
-        var pos = ctx.getBlockPos();
+        var hitpos = hit.getPos().relativize(Vec3d.of(pos)).multiply(-1);
 
-        var offPos = pos.offset(clickDirection);
-        var offBlock = world.getBlockState(offPos);
-        var lookupResult = lookup.find(world, offPos, clickDirection.getOpposite());
+        Direction direction = null;
 
-        if (state != null && ctx.canPlace()) {
-            if (offBlock.getBlock() instanceof PipeBlock pipe && pipe.lookup == lookup) {
-                state = state.with(LINEAR_AXIS, clickDirection.getAxis());
+        for (Intercept intercept : INTERCEPTS) {
+            if (intercept.box.contains(hitpos)) {
+                direction = intercept.direction;
+                break;
             }
-            else if (lookupResult != null) {
-                if(lookupResult.supportsInsertion() || lookupResult.supportsExtraction()) {
-                    state = state.with(LINEAR_AXIS, clickDirection.getAxis());
-                }
-            }
-            else if (!ctx.getPlayer().isSneaking()) {
-                var facing = ctx.getPlayerLookDirection();
-                return alignTo(state, facing, true);
-            }
-
-            if (ctx.getPlayer().isSneaking()) {
-                int changes = 0;
-                boolean opposite = false;
-
-                for (Direction direction : Direction.values()) {
-                    var checkPos = pos.offset(direction);
-                    var checkBlock = world.getBlockState(checkPos);
-                    if(checkBlock.getBlock() instanceof PipeBlock check && check.lookup == lookup && check.isDirectionOpen(checkBlock, direction.getOpposite())) {
-                        if(direction.getAxis() != clickDirection.getAxis()) {
-                            state = state.with(STRAIGHT, false).with(CONNECTIONS.get(direction), true);
-                            changes++;
-                        }
-                        else if(direction == clickDirection.getOpposite()) {
-                            opposite = true;
-                        }
-                    }
-                }
-
-                if (changes > 0) {
-                    return alignTo(state, clickDirection, false).with(CONNECTIONS.get(clickDirection.getOpposite()), opposite);
-                }
-            }
-
-            return alignTo(state, clickDirection, true);
         }
-        return null;
+
+        if (direction == null)
+            return ActionResult.PASS;
+
+
+        var connection = CONNECTIONS.get(direction);
+        var connected = reference.getProperty(connection);
+
+        reference.setProperty(connection, !connected);
+        updateLinear(reference);
+        reference.update(world);
+
+        postProcessWrenchHit(world, direction, reference, connected);
+
+        return ActionResult.success(world.isClient());
     }
-     */
+
+    abstract void postProcessWrenchHit(World world, Direction direction, BlockReference reference, boolean disconnecting);
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
@@ -248,6 +233,8 @@ public abstract class PipeBlock<T extends TransferNetwork<T, ?>> extends Logisti
 
             if(changedDirs.size() == 1 && changedDirs.get(0).getAxis() == facing.getAxis()) {
                 state = state.with(STRAIGHT, true).with(LINEAR_AXIS, facing.getAxis());
+                state = state.with(CONNECTIONS.get(changedDirs.get(0)), true);
+                state = state.with(CONNECTIONS.get(changedDirs.get(0).getOpposite()), true);
             }
 
             state = state.with(CONNECTIONS.get(facing), true);
@@ -281,6 +268,14 @@ public abstract class PipeBlock<T extends TransferNetwork<T, ?>> extends Logisti
         }
     }
 
+    private record Intercept(Direction direction, Box box) {
+
+        public BooleanProperty connection() {
+            return CONNECTIONS.get(direction);
+        }
+
+    }
+
     static {
         //noinspection unchecked
         CONNECTIONS = (Map<Direction, BooleanProperty>) (Object) ImmutableMap.builder()
@@ -299,6 +294,15 @@ public abstract class PipeBlock<T extends TransferNetwork<T, ?>> extends Logisti
                 .put(Direction.SOUTH, Block.createCuboidShape(5, 5, 11, 11, 11 ,16))
                 .put(Direction.DOWN, Block.createCuboidShape(5, 0, 5, 11, 5 ,11))
                 .put(Direction.UP, Block.createCuboidShape(5, 11, 5, 11, 16 ,11))
+                .build();
+        //noinspection unchecked
+        INTERCEPTS = (List<Intercept>) (Object) ImmutableList.builder()
+                .add(new Intercept(Direction.UP, Shorthands.pixelBox(4, 11, 4, 12, 16.25, 12)))
+                .add(new Intercept(Direction.DOWN, Shorthands.pixelBox(4, 0, 4, 12, 5.25, 12)))
+                .add(new Intercept(Direction.NORTH, Shorthands.pixelBox(4, 4, 0, 12, 12, 5.25)))
+                .add(new Intercept(Direction.SOUTH, Shorthands.pixelBox(4, 4, 11, 12, 12, 16.25)))
+                .add(new Intercept(Direction.WEST, Shorthands.pixelBox(0, 4, 4, 5.25, 12, 12)))
+                .add(new Intercept(Direction.EAST, Shorthands.pixelBox(11, 4, 4, 16.25, 12, 12)))
                 .build();
     }
 }

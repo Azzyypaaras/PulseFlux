@@ -61,7 +61,7 @@ public class PulseFluxBlockEntities {
     public static void postInit() {
         fluidStorage(((blockEntity, direction) -> {
             if(blockEntity instanceof FluidPipeBlockEntity pipe) {
-                return pipe.getParentNetwork().orElse(null);
+                return pipe.tankReference;
             }
             return null;
         }), WOODEN_FLUID_PIPE_TYPE);
