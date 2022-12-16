@@ -15,6 +15,7 @@ import net.id.pulseflux.network.NetworkManager;
 import net.id.pulseflux.network.TransferNetwork;
 import net.id.pulseflux.util.TransferHelper;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
