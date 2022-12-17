@@ -1,40 +1,35 @@
 package net.id.pulseflux.item;
 
-
-import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.id.pulseflux.PulseFlux;
-import net.id.pulseflux.block.PulseFluxBlocks;
 import net.id.pulseflux.arrp.PulseFluxResources;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
 
 public class PulseFluxItemGroups {
 
-    public static final ItemGroup LOGISTICS = FabricItemGroupBuilder.build(
-            PulseFlux.locate("logistics"),
-            (() -> new ItemStack(PulseFluxBlocks.WORKSHOP_DIODE))
-    );
+    public static final DeferredItemGroupBuilder LOGISTICS =
+            DeferredItemGroupBuilder.of(PulseFlux.locate("logistics"));
 
-    public static final ItemGroup MACHINES = FabricItemGroupBuilder.build(
-            PulseFlux.locate("machines"),
-            (() -> new ItemStack(PulseFluxBlocks.WORKSHOP_DIODE))
-    );
-
-    public static final ItemGroup TOOLS = FabricItemGroupBuilder.build(
-            PulseFlux.locate("tools"),
-            (() -> new ItemStack(PulseFluxItems.NETWORK_DEBUGGER_ITEM))
-    );
+    public static final DeferredItemGroupBuilder MACHINES =
+            DeferredItemGroupBuilder.of(PulseFlux.locate("machines"));
 
 
-    public static final ItemGroup RESOURCES = FabricItemGroupBuilder.build(
-            PulseFlux.locate("resources"),
-            (() -> new ItemStack(PulseFluxItems.HSLA_STEEL_INGOT))
-    );
+    public static final DeferredItemGroupBuilder TOOLS =
+            DeferredItemGroupBuilder.of(PulseFlux.locate("tools"));
 
-    public static final ItemGroup DECORATION = FabricItemGroupBuilder.build(
-            PulseFlux.locate("decoration"),
-            (() -> new ItemStack(PulseFluxItems.TREATED_WOOD_PLANKS))
-    );
+
+    public static final DeferredItemGroupBuilder RESOURCES =
+            DeferredItemGroupBuilder.of(PulseFlux.locate("resources"));
+
+
+    public static final DeferredItemGroupBuilder DECORATION =
+            DeferredItemGroupBuilder.of(PulseFlux.locate("decoration"));
+
+    public static void build() {
+        LOGISTICS.build(PulseFluxItems.WOODEN_FLUID_PIPE.getDefaultStack());
+        MACHINES.build(PulseFluxItems.STONE_BASIN.getDefaultStack());
+        TOOLS.build(PulseFluxItems.MANUAL_WRENCH.getDefaultStack());
+        RESOURCES.build(PulseFluxItems.HSLA_STEEL_INGOT.getDefaultStack());
+        DECORATION.build(PulseFluxItems.TREATED_WOOD_PLANKS.getDefaultStack());
+    }
 
     static {
         PulseFluxResources.EN_US.itemGroup(PulseFlux.locate("logistics"), "§6PF Logistics");

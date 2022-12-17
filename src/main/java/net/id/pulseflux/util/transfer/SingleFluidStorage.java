@@ -6,8 +6,12 @@ import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleVariantStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.nbt.NbtCompound;
 
+import javax.annotation.Nullable;
+import java.util.Optional;
+
 public class SingleFluidStorage extends SingleVariantStorage<FluidVariant> {
 
+    private final Optional<String> name;
     private final long capacity;
     private final boolean allowInsertion, allowExtraction;
 
@@ -16,10 +20,15 @@ public class SingleFluidStorage extends SingleVariantStorage<FluidVariant> {
     }
 
     public SingleFluidStorage(long capacity) {
-        this(capacity, true, true);
+        this(null, capacity, true, true);
     }
 
-    public SingleFluidStorage(long capacity, boolean allowInsertion, boolean allowExtraction) {
+    public SingleFluidStorage(String name, long capacity) {
+        this(name, capacity, true, true);
+    }
+
+    public SingleFluidStorage(@Nullable String name, long capacity, boolean allowInsertion, boolean allowExtraction) {
+        this.name = Optional.ofNullable(name);
         this.capacity = capacity;
         this.allowInsertion = allowInsertion;
         this.allowExtraction = allowExtraction;
@@ -53,11 +62,19 @@ public class SingleFluidStorage extends SingleVariantStorage<FluidVariant> {
     }
 
     public void save(NbtCompound nbt) {
-        nbt.put("fluid", getResource().toNbt());
-        nbt.putLong("amount", amount);
+        var tag = nbt;
+
+        if (name.isPresent()) {
+            tag = new NbtCompound();
+            nbt.put(name.get(), tag);
+        }
+
+        tag.put("fluid", getResource().toNbt());
+        tag.putLong("amount", amount);
     }
 
     public void load(NbtCompound nbt) {
+        nbt = name.map(nbt::getCompound).orElse(nbt);
         variant = FluidVariant.fromNbt((NbtCompound) nbt.get("fluid"));
         amount = nbt.getLong("amount");
     }

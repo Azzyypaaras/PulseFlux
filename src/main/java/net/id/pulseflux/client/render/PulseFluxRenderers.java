@@ -6,8 +6,6 @@ import static net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererReg
 public class PulseFluxRenderers {
 
     public static void init() {
-        register(WORKSHOP_DIODE_TYPE, PulseRenderer::new);
-        register(CREATIVE_PULSE_SOURCE_TYPE, PulseRenderer::new);
     }
 
 }

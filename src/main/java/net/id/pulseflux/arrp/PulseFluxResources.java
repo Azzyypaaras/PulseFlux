@@ -5,10 +5,12 @@ import net.devtech.arrp.api.RuntimeResourcePack;
 import net.devtech.arrp.json.lang.JLang;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
-import static net.id.pulseflux.PulseFlux.*;
+import static net.id.pulseflux.PulseFlux.MOD_ID;
+import static net.id.pulseflux.PulseFlux.locate;
 
 public class PulseFluxResources {
 
@@ -47,11 +49,11 @@ public class PulseFluxResources {
     }
 
     public static Identifier getBlockId(Block block) {
-        return getId(Registry.BLOCK, block);
+        return getId(Registries.BLOCK, block);
     }
 
     public static Identifier getItemId(Item item) {
-        return getId(Registry.ITEM, item);
+        return getId(Registries.ITEM, item);
     }
 
     public static <T> Identifier getId(Registry<T> registry, T object) {

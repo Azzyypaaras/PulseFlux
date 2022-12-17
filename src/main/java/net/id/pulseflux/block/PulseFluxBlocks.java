@@ -3,21 +3,19 @@ package net.id.pulseflux.block;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.id.incubus_core.systems.DefaultMaterials;
 import net.id.incubus_core.util.RegistryQueue;
-import net.id.pulseflux.arrp.TagGen;
+import net.id.pulseflux.block.fluid_storage.BasinBlock;
+import net.id.pulseflux.block.fluid_storage.ReservoirBlock;
 import net.id.pulseflux.block.misc.TreetapBlock;
-import net.id.pulseflux.block.pulse.BaseDiodeBlock;
-import net.id.pulseflux.block.pulse.CreativePulseSourceBlock;
-import net.id.pulseflux.block.storage.ReservoirBlock;
 import net.id.pulseflux.block.transport.FluidPipeBlock;
-import net.id.pulseflux.block.transport.PipeBlock;
 import net.id.pulseflux.registry.PulseFluxRegistryQueues;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MapColor;
 
-import static net.id.pulseflux.block.PulseFluxBlockActions.*;
 import static net.id.pulseflux.PulseFlux.locate;
-import static net.id.pulseflux.arrp.PulseFluxResources.*;
+import static net.id.pulseflux.arrp.PulseFluxResources.EN_US;
+import static net.id.pulseflux.arrp.assets.Devices.createBasinAssets;
+import static net.id.pulseflux.block.PulseFluxBlockActions.*;
 
 public class PulseFluxBlocks {
 
@@ -35,36 +33,41 @@ public class PulseFluxBlocks {
 
 
     /**
-     * POWER
+     * 0. POWER
      */
-
-    public static final BaseDiodeBlock WORKSHOP_DIODE = add("workshop_diode", new BaseDiodeBlock(FabricBlockSettings.copy(Blocks.IRON_BLOCK)), generateDiodeAssets, useWrench, selfDrop, generateLocale("Workshop Diode"));
-
-    public static final CreativePulseSourceBlock CREATIVE_PULSE_SOURCE = add("creative_pulse_source", new CreativePulseSourceBlock(FabricBlockSettings.copy(Blocks.NETHERITE_BLOCK)), generateDiodeAssets, useWrench, tier(TagGen.Tier.NETHERITE), selfDrop, generateLocale("Creative Pulse Source"));
 
 
     /**
-     * LOGISTICS
+     * 1. LOGISTICS
      */
 
     public static final FluidPipeBlock WOODEN_FLUID_PIPE = add("wooden_fluid_pipe", new FluidPipeBlock(FabricBlockSettings.copyOf(Blocks.OAK_LOG), DefaultMaterials.IRON, 81000), translucentRenderLayer, generatePipeAssets, useWrench, selfDrop, generateLocale("Wooden Pipe"));
 
     /**
-     * STORAGE
+     * 2. STORAGE
+     */
+
+    private static final RegistryQueue.Action<Block> generateBasinAssets = ((identifier, basinBlock) -> createBasinAssets(identifier));
+
+    /**
+     * 2.1 fluid storage
      */
 
     public static final ReservoirBlock RESERVOIR = add("reservoir", new ReservoirBlock(FabricBlockSettings.copyOf(Blocks.ANDESITE)), cutoutRenderLayer);
 
+    public static final BasinBlock STONE_BASIN = add("stone_basin", new BasinBlock(FabricBlockSettings.copyOf(Blocks.ANDESITE)), cutoutRenderLayer, selfDrop, generateBasinAssets, generateLocale("Tempered Stone Basin"));
+
+
 
     /**
-     * MISC
+     * 3. MISC
      */
 
     public static final TreetapBlock TREETAP = add("treetap", new TreetapBlock(varnishedWood()), selfDrop, generateLocale("Treetap"), translucentRenderLayer);
 
 
     /**
-     * DECORATION
+     * 4. DECORATION
      */
 
     public static final Block TREATED_WOOD_PLANKS = add("treated_wood_planks", new Block(treatedWood()), planks, generateAssets, selfDrop, generateLocale("Treated Wood Planks"));
@@ -73,7 +76,7 @@ public class PulseFluxBlocks {
 
 
     /**
-     * RESOURCES
+     * 5. RESOURCES
      */
 
     public static final Block HSLA_STEEL_BLOCK = add("hsla_steel_block", new Block(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)), generateAssets, selfDrop, generateLocale("HSLA Steel Block"));

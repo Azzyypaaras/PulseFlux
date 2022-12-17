@@ -1,10 +1,8 @@
 package net.id.pulseflux.item.debug;
 
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleVariantStorage;
-import net.id.pulseflux.block.storage.ReservoirBlock;
 import net.id.pulseflux.block.transport.LogisticComponentBlock;
 import net.id.pulseflux.util.FluidTextHelper;
 import net.minecraft.item.Item;

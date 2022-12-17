@@ -3,7 +3,6 @@ package net.id.pulseflux.arrp;
 import net.id.pulseflux.PulseFlux;
 import net.minecraft.item.Item;
 
-import static net.id.pulseflux.arrp.PulseFluxResources.*;
 import static net.id.pulseflux.item.PulseFluxItems.*;
 
 public class PulseFluxRecipes {

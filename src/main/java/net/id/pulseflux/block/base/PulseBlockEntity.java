@@ -1,9 +1,10 @@
 package net.id.pulseflux.block.base;
 
+import net.id.incubus_core.be.IncubusLazyBlockEntity;
 import net.id.incubus_core.systems.Material;
+import net.id.incubus_core.systems.Simulation;
 import net.id.pulseflux.systems.Polarity;
 import net.id.pulseflux.systems.PulseIo;
-import net.id.incubus_core.systems.Simulation;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
@@ -11,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class PulseBlockEntity extends PFBlockEntity implements PulseIo {
+public abstract class PulseBlockEntity extends IncubusLazyBlockEntity implements PulseIo {
 
     protected final Material material;
     @NotNull protected Polarity polarity = Polarity.NONE;

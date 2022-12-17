@@ -2,14 +2,15 @@ package net.id.pulseflux.util;
 
 import com.google.common.math.LongMath;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 /**
  * A few helpers to display fluids.
  */
 public class FluidTextHelper {
     public static String toString(Fluid fluid) {
-        return Registry.FLUID.getId(fluid).toString();
+        return Registries.FLUID.getId(fluid).toString();
     }
 
     /**

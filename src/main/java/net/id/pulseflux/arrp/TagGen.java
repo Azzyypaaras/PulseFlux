@@ -7,8 +7,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
+import static net.id.pulseflux.PulseFlux.locate;
 import static net.id.pulseflux.arrp.PulseFluxResources.*;
-import static net.id.pulseflux.PulseFlux.*;
 
 public class TagGen {
 

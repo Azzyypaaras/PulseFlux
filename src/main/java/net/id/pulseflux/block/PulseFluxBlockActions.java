@@ -4,17 +4,21 @@ import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
 import net.fabricmc.fabric.mixin.lookup.BlockEntityTypeAccessor;
+import net.id.incubus_core.util.RegistryQueue.Action;
+import net.id.pulseflux.arrp.TagGen.CATEGORY;
+import net.id.pulseflux.arrp.TagGen.Tier;
+import net.id.pulseflux.arrp.TagGen.Tool;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractSignBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.render.RenderLayer;
 
-import static net.id.incubus_core.util.RegistryQueue.Action;
 import static net.id.incubus_core.util.RegistryQueue.onClient;
 import static net.id.pulseflux.arrp.AssetGen.*;
-import static net.id.pulseflux.arrp.DataGen.*;
-import static net.id.pulseflux.arrp.TagGen.*;
+import static net.id.pulseflux.arrp.DataGen.lootSelfDrop;
+import static net.id.pulseflux.arrp.TagGen.categorize;
+import static net.id.pulseflux.arrp.TagGen.requireTool;
 
 class PulseFluxBlockActions {
     protected static final AbstractBlock.ContextPredicate never = (state, view, pos) -> false;

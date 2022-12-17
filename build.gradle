@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.12-SNAPSHOT'
+	id 'fabric-loom' version '1.0-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -61,7 +61,7 @@ dependencies {
 	// Dev env only
 	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 	modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
-	modApi "dev.architectury:architectury-fabric:${project.architectury_version}"
+	//modApi "dev.architectury:architectury-fabric:${project.architectury_version}"
 }
 
 processResources {

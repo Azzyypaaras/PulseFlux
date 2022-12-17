@@ -1,13 +1,13 @@
 package net.id.pulseflux.block.misc;
 
-import net.id.pulseflux.block.base.PFBlockEntity;
+import net.id.incubus_core.be.IncubusLazyBlockEntity;
 import net.id.pulseflux.block.PulseFluxBlockEntities;
 import net.id.pulseflux.util.transfer.SingleFluidStorage;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 
-public class TreetapBlockEntity extends PFBlockEntity {
+public class TreetapBlockEntity extends IncubusLazyBlockEntity {
 
     private final SingleFluidStorage tank = new SingleFluidStorage();
 

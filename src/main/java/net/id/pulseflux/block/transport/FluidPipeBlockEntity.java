@@ -4,18 +4,15 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
-import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.ResourceAmount;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleVariantStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
-import net.id.pulseflux.block.base.PFBlockEntity;
+import net.id.incubus_core.be.IncubusLazyBlockEntity;
 import net.id.pulseflux.block.PulseFluxBlockEntities;
 import net.id.pulseflux.network.FluidNetwork;
 import net.id.pulseflux.network.NetworkManager;
 import net.id.pulseflux.network.TransferNetwork;
-import net.id.pulseflux.util.TransferHelper;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -26,7 +23,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class FluidPipeBlockEntity extends PFBlockEntity {
+public class FluidPipeBlockEntity extends IncubusLazyBlockEntity {
 
     @NotNull
     public final DelegatedFluidStorage tankReference = new DelegatedFluidStorage();

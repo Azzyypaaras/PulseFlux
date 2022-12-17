@@ -13,14 +13,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.lang.reflect.Type;
 
 @Mixin(JWhen.Serializer.class)
-public class JWhenSerializerMixin {
+public class EWhenMixin {
 
-    @Inject(method = {"serialize(Ljava/lang/Object;Ljava/lang/reflect/Type;Lcom/google/gson/JsonSerializationContext;)Lcom/google/gson/JsonElement;"}, at = @At("HEAD"), remap = false, cancellable = true)
-    public void serialize(Object src, Type srcType, JsonSerializationContext context, CallbackInfoReturnable<JsonElement> cir) {
-        if(src instanceof EWhen when) {
+    @Inject(method = "serialize(Lnet/devtech/arrp/json/blockstate/JWhen;Ljava/lang/reflect/Type;Lcom/google/gson/JsonSerializationContext;)Lcom/google/gson/JsonElement;", at = @At("HEAD"), remap = false, cancellable = true)
+    public void serialize(JWhen src, Type typeOfSrc, JsonSerializationContext context, CallbackInfoReturnable<JsonElement> cir) {
+        if (src instanceof EWhen) {
+            var when = (EWhen) src;
+
             var AND = when.getAND();
 
-            if(!AND.isEmpty()) {
+            if (!AND.isEmpty()) {
                 JsonObject json = new JsonObject();
                 for (String condition : AND) {
                     var strings = condition.split(":");

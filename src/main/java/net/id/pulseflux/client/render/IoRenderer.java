@@ -7,9 +7,12 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Vector3f;
 
 import static net.id.pulseflux.systems.IoProvider.Type.*;
+
+import java.util.List;
+
 import static net.id.incubus_core.render.RenderHelper.*;
 
 public class IoRenderer<E extends BlockEntity & IoProvider> implements BlockEntityRenderer<E> {
@@ -39,7 +42,7 @@ public class IoRenderer<E extends BlockEntity & IoProvider> implements BlockEnti
         }
     }
 
-    private void renderIo(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Direction direction, Vec3f color, float transMult, float scale) {
+    private void renderIo(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Direction direction, Vector3f color, float transMult, float scale) {
 
         matrices.push();
         matrices.translate(0.5, 0.5, 0.5);

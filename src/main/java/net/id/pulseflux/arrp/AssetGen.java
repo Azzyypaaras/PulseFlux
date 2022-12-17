@@ -6,8 +6,8 @@ import net.devtech.arrp.json.models.JModel;
 import net.id.pulseflux.util.mixin.EWhen;
 import net.minecraft.util.Identifier;
 
-import static net.id.pulseflux.arrp.PulseFluxResources.*;
 import static net.devtech.arrp.json.blockstate.JState.when;
+import static net.id.pulseflux.arrp.PulseFluxResources.*;
 
 public class AssetGen {
 

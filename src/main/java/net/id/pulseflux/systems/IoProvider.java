@@ -1,13 +1,11 @@
 package net.id.pulseflux.systems;
 
-import net.id.pulseflux.systems.Polarity;
-import net.id.pulseflux.systems.PulseIo;
 import net.id.incubus_core.systems.Simulation;
 import net.id.pulseflux.util.ColorHelper;
 import net.id.pulseflux.util.RelativeObjectData;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3f;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -66,12 +64,12 @@ public interface IoProvider {
     }
 
     enum Type {
-        PULSE(ColorHelper.hexToVec(0x78ffcb), ColorHelper.hexToVec(0xff7e3d), ColorHelper.hexToVec(0xfff478), 1F);
+        PULSE(ColorHelper.hexToNormalizedRGB(0x78ffcb), ColorHelper.hexToNormalizedRGB(0xff7e3d), ColorHelper.hexToNormalizedRGB(0xfff478), 1F);
 
-        public final Vec3f inputColor, outputColor, mixedColor;
+        public final Vector3f inputColor, outputColor, mixedColor;
         public final float scale;
 
-        Type(Vec3f inputColor, Vec3f outputColor, Vec3f mixedColor, float scale) {
+        Type(Vector3f inputColor, Vector3f outputColor, Vector3f mixedColor, float scale) {
             this.inputColor = inputColor;
             this.outputColor = outputColor;
             this.mixedColor = mixedColor;

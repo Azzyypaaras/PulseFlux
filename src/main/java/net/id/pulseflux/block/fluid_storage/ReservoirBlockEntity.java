@@ -1,4 +1,4 @@
-package net.id.pulseflux.block.storage;
+package net.id.pulseflux.block.fluid_storage;
 
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;

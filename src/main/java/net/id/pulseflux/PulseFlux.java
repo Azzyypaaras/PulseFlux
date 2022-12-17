@@ -8,6 +8,7 @@ import net.id.pulseflux.arrp.PulseFluxRecipes;
 import net.id.pulseflux.block.PulseFluxBlocks;
 import net.id.pulseflux.block.PulseFluxBlockEntities;
 import net.id.pulseflux.client.render.PulseFluxRenderers;
+import net.id.pulseflux.item.PulseFluxItemGroups;
 import net.id.pulseflux.item.PulseFluxItems;
 import net.id.pulseflux.arrp.PulseFluxResources;
 import net.id.pulseflux.network.Reconstructors;
@@ -33,6 +34,7 @@ public class PulseFlux implements ModInitializer, ClientModInitializer {
 		PulseFluxRegistries.init();
 		PulseFluxBlocks.init();
 		PulseFluxItems.init();
+		PulseFluxItemGroups.build();
 		PulseFluxBlockEntities.init();
 		PulseFluxBlockEntities.postInit();
 		PulseFluxRecipes.init();

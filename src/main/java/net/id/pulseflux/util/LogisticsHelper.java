@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static net.id.pulseflux.systems.Lookups.*;
+import static net.id.pulseflux.systems.PulseLookups.PULSE;
 
 public class LogisticsHelper {
 
