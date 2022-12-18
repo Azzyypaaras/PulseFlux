@@ -35,21 +35,24 @@ public class SingleFluidStorage extends SingleVariantStorage<FluidVariant> {
     }
 
     @Override
+    protected boolean canInsert(FluidVariant variant) {
+        return allowInsertion;
+    }
+
+    @Override
     public boolean supportsInsertion() {
         return allowInsertion;
     }
 
     @Override
-    public long insert(FluidVariant insertedVariant, long maxAmount, TransactionContext transaction) {
-        return super.insert(insertedVariant, maxAmount, transaction);
+    protected boolean canExtract(FluidVariant variant) {
+        return allowExtraction;
     }
 
     @Override
     public boolean supportsExtraction() {
         return allowExtraction;
     }
-
-
 
     @Override
     protected FluidVariant getBlankVariant() {

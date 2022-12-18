@@ -22,9 +22,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class BasinBlockEntity extends PFTickingBE implements PressureIo, BlockApiLookup.BlockEntityApiProvider<PulseIo, Direction> {
 
-    private long outputDroplets, tankDroplets, lastOutputDroplets, lastTankDroplets;
+    long outputDroplets, tankDroplets, lastOutputDroplets, lastTankDroplets;
 
-    final SingleFluidStorage tank = new SingleFluidStorage("tank", 4 * FluidConstants.BUCKET);
+    final SingleFluidStorage tank = new SingleFluidStorage("tank", 5 * FluidConstants.BUCKET);
     final SingleFluidStorage output = new SingleFluidStorage("output", FluidConstants.BUCKET, false, true);
 
     public static final RegistryQueue.Action<BlockEntityType<?>> lookup = (id, type) -> FluidStorage.SIDED.registerForBlockEntity((entity, direction) -> {
@@ -42,14 +42,25 @@ public class BasinBlockEntity extends PFTickingBE implements PressureIo, BlockAp
     @Override
     protected void tick(BlockPos pos, BlockState state) {
         lastTankDroplets = tankDroplets;
+        lastOutputDroplets = outputDroplets;
 
         if (tankDroplets != tank.getAmount()) {
             var dif = (tankDroplets - tank.getAmount()) * -1;
-            if (dif < 50) {
+            if (Math.abs(dif) < 50) {
                 tankDroplets = tank.getAmount();
             }
             else {
-                tankDroplets += dif / 2;
+                tankDroplets += dif / 3;
+            }
+        }
+
+        if (outputDroplets != output.getAmount()) {
+            var dif = (outputDroplets - output.getAmount()) * -1;
+            if (Math.abs(dif) < 50) {
+                outputDroplets = output.getAmount();
+            }
+            else {
+                outputDroplets += dif / 3;
             }
         }
     }
@@ -57,13 +68,12 @@ public class BasinBlockEntity extends PFTickingBE implements PressureIo, BlockAp
     public boolean onPlayerUse(PlayerEntity player) {
         var io = ContainerItemContext.ofPlayerHand(player, player.getActiveHand()).find(FluidStorage.ITEM);
 
-        if (output.getAmount() > 0) {
+        //if (output.getAmount() > 0) {
             var sound = FluidVariantAttributes.getFillSound(output.getResource());
-            if (StorageUtil.move(output, io, f -> true, Long.MAX_VALUE, null) > 0) {
-                player.playSound(sound, SoundCategory.BLOCKS, 1f, 0.9f + world.getRandom().nextFloat() * 0.2F);
+            if (FluidStorageUtil.interactWithFluidStorage(output, player, player.getActiveHand())) {
                 return true;
             }
-        }
+        //}
 
         return FluidStorageUtil.interactWithFluidStorage(tank, player, player.getActiveHand());
     }
