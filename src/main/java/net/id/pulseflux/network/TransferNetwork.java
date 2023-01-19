@@ -1,8 +1,5 @@
 package net.id.pulseflux.network;
 
-import net.fabricmc.fabric.api.transfer.v1.storage.TransferVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.base.ResourceAmount;
-import net.fabricmc.fabric.api.transfer.v1.transaction.base.SnapshotParticipant;
 import net.id.pulseflux.PulseFlux;
 import net.id.pulseflux.block.transport.LogisticComponentBlock;
 import net.minecraft.block.BlockState;
@@ -13,17 +10,16 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.level.LevelProperties;
-import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static net.id.pulseflux.util.Shorthands.*;
+import static net.id.pulseflux.util.Shorthands.list;
 
 public abstract class TransferNetwork<T extends TransferNetwork<T>> {
 

@@ -3,7 +3,6 @@ package net.id.pulseflux.util;
 import com.google.common.math.LongMath;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
 
 /**
  * A few helpers to display fluids.

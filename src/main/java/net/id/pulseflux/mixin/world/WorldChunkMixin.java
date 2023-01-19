@@ -1,8 +1,7 @@
 package net.id.pulseflux.mixin.world;
 
-import net.id.pulseflux.systems.Polarity;
-import java.util.List;
 import net.id.pulseflux.systems.IoProvider;
+import net.id.pulseflux.systems.Polarity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;

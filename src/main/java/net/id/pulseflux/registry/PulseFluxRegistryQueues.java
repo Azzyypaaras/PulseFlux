@@ -8,9 +8,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-
-import static net.id.pulseflux.network.TransferNetwork.NetworkReconstructor;
 
 public class PulseFluxRegistryQueues {
     public static final RegistryQueue<Block> BLOCK = new RegistryQueue<>(Registries.BLOCK, 256);
@@ -18,5 +15,5 @@ public class PulseFluxRegistryQueues {
     public static final RegistryQueue<EntityType<?>> ENTITY_TYPE = new RegistryQueue<>(Registries.ENTITY_TYPE, 32);
     public static final RegistryQueue<Item> ITEM = new RegistryQueue<>(Registries.ITEM, 512);
     public static final RegistryQueue<Fluid> FLUID = new RegistryQueue<>(Registries.FLUID, 8);
-    public static final RegistryQueue<NetworkReconstructor<?>> NETWORK_RECONSTRUCTOR = new RegistryQueue<>(PulseFluxRegistries.NETWORK_RECONSTRUCTOR, 2);
+    public static final RegistryQueue<NetworkReconstructor> NETWORK_RECONSTRUCTOR = new RegistryQueue<>(PulseFluxRegistries.NETWORK_RECONSTRUCTOR, 2);
 }

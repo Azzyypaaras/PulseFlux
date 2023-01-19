@@ -1,4 +1,4 @@
-package net.id.pulseflux.client.render;
+package net.id.pulseflux.render.client;
 
 import net.id.pulseflux.systems.IoProvider;
 import net.minecraft.block.entity.BlockEntity;
@@ -9,11 +9,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
 import org.joml.Vector3f;
 
-import static net.id.pulseflux.systems.IoProvider.Type.*;
-
-import java.util.List;
-
-import static net.id.incubus_core.render.RenderHelper.*;
+import static net.id.incubus_core.render.RenderHelper.directionalMatrixMultiply;
+import static net.id.incubus_core.render.RenderHelper.drawEmissiveCube;
+import static net.id.pulseflux.systems.IoProvider.Type.PULSE;
 
 public class IoRenderer<E extends BlockEntity & IoProvider> implements BlockEntityRenderer<E> {
 

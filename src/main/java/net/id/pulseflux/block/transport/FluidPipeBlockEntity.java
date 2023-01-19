@@ -12,6 +12,7 @@ import net.id.pulseflux.block.PulseFluxBlockEntities;
 import net.id.pulseflux.network.FluidNetwork;
 import net.id.pulseflux.network.NetworkManager;
 import net.id.pulseflux.network.TransferNetwork;
+import net.id.pulseflux.systems.PressureHolder;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
@@ -23,7 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class FluidPipeBlockEntity extends IncubusLazyBlockEntity {
+public class FluidPipeBlockEntity extends IncubusLazyBlockEntity implements PressureHolder {
 
     @NotNull
     public final DelegatedFluidStorage tankReference = new DelegatedFluidStorage();
@@ -151,6 +152,11 @@ public class FluidPipeBlockEntity extends IncubusLazyBlockEntity {
     @Override
     public void loadClient(NbtCompound nbt) {
         networkId = nbt.contains("parent") ? Optional.ofNullable(nbt.getUuid("parent")) : Optional.empty();
+    }
+
+    @Override
+    public long queryPressure() {
+        return parentNetwork.map(FluidNetwork::queryPressure).orElse(0L);
     }
 
     public class DelegatedFluidStorage extends SingleVariantStorage<FluidVariant> {

@@ -1,7 +1,6 @@
 package net.id.pulseflux.systems;
 
 import net.id.incubus_core.systems.MaterialProvider;
-import net.id.pulseflux.systems.Polarity;
 import net.id.incubus_core.systems.Simulation;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.Direction;

@@ -4,8 +4,6 @@ import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityT
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
-import net.id.incubus_core.systems.Lookups;
-import net.id.incubus_core.systems.PressureIo;
 import net.id.incubus_core.util.RegistryQueue;
 import net.id.incubus_core.util.RegistryQueue.Action;
 import net.id.pulseflux.block.fluid_storage.BasinBlockEntity;
@@ -13,6 +11,8 @@ import net.id.pulseflux.block.fluid_storage.ReservoirBlockEntity;
 import net.id.pulseflux.block.misc.TreetapBlockEntity;
 import net.id.pulseflux.block.transport.FluidPipeBlockEntity;
 import net.id.pulseflux.registry.PulseFluxRegistryQueues;
+import net.id.pulseflux.systems.PFLookups;
+import net.id.pulseflux.systems.PressureHolder;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -31,7 +31,7 @@ public class PulseFluxBlockEntities {
             }
             return null;
         }), blockEntityType));
-    //private static final Action<BlockEntityType<?>> pressureProvider = (identifier, blockEntityType) -> Lookups.PRESSURE.registerForBlockEntities((entity, direction) -> (PressureIo) entity);
+    private static final Action<BlockEntityType<?>> pressureProvider = (identifier, blockEntityType) -> PFLookups.PRESSURE.registerForBlockEntity((entity, direction) -> (PressureHolder) entity, blockEntityType);
 
     private static final Action<BlockEntityType<?>> simpleTank = ((identifier, blockentityType) -> FluidStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> ((ReservoirBlockEntity) blockEntity).getTank(), blockentityType));
 
@@ -46,7 +46,7 @@ public class PulseFluxBlockEntities {
 
     public static final BlockEntityType<ReservoirBlockEntity> RESERVOIR_TYPE = add("reservoir", create(ReservoirBlockEntity::new, RESERVOIR), simpleTank);
 
-    public static final BlockEntityType<BasinBlockEntity> STONE_BASIN_TYPE = add("stone_basin", create(BasinBlockEntity::new, STONE_BASIN), BasinBlockEntity.lookup);
+    public static final BlockEntityType<BasinBlockEntity> STONE_BASIN_TYPE = add("stone_basin", create(BasinBlockEntity::new, STONE_BASIN), BasinBlockEntity.lookup, pressureProvider);
 
     public static final BlockEntityType<FluidPipeBlockEntity> WOODEN_FLUID_PIPE_TYPE = add("wooden_fluid_pipe", create(FluidPipeBlockEntity::new, WOODEN_FLUID_PIPE));
 

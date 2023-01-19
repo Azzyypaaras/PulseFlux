@@ -1,11 +1,9 @@
-package net.id.pulseflux.client.render;
+package net.id.pulseflux.render.client;
 
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
-import net.id.pulseflux.block.PulseFluxBlockEntities;
 import net.id.pulseflux.block.fluid_storage.BasinBlockEntityRenderer;
 
-import static net.id.pulseflux.block.PulseFluxBlockEntities.*;
-import static net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry.*;
+import static net.id.pulseflux.block.PulseFluxBlockEntities.STONE_BASIN_TYPE;
 
 public class PulseFluxRenderers {
 

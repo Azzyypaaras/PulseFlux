@@ -4,13 +4,17 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.id.pulseflux.arrp.PulseFluxRecipes;
-import net.id.pulseflux.block.PulseFluxBlocks;
+import net.id.pulseflux.arrp.PulseFluxResources;
 import net.id.pulseflux.block.PulseFluxBlockEntities;
-import net.id.pulseflux.client.render.PulseFluxRenderers;
+import net.id.pulseflux.block.PulseFluxBlocks;
+import net.id.pulseflux.render.client.PulseFluxRenderers;
+import net.id.pulseflux.render.client.RenderStage;
+import net.id.pulseflux.render.client.UnboundEffectManager;
 import net.id.pulseflux.item.PulseFluxItemGroups;
 import net.id.pulseflux.item.PulseFluxItems;
-import net.id.pulseflux.arrp.PulseFluxResources;
 import net.id.pulseflux.network.Reconstructors;
 import net.id.pulseflux.registry.PulseFluxRegistries;
 import net.minecraft.util.Identifier;
@@ -46,5 +50,14 @@ public class PulseFlux implements ModInitializer, ClientModInitializer {
 	@Environment(EnvType.CLIENT)
 	public void onInitializeClient() {
 		PulseFluxRenderers.init();
+
+		WorldRenderEvents.BEFORE_ENTITIES.register(context -> UnboundEffectManager.render(context, null, null, RenderStage.PRE_ENTITIES));
+		WorldRenderEvents.AFTER_ENTITIES.register(context -> UnboundEffectManager.render(context, null, null, RenderStage.POST_ENTITIES));
+		WorldRenderEvents.BEFORE_BLOCK_OUTLINE.register((context, hit) -> UnboundEffectManager.render(context, hit, null, RenderStage.PRE_OUTLINES));
+		WorldRenderEvents.BLOCK_OUTLINE.register((context, outline) -> UnboundEffectManager.render(context, null, outline, RenderStage.OUTLINES));
+		WorldRenderEvents.AFTER_TRANSLUCENT.register(context -> UnboundEffectManager.render(context, null, null, RenderStage.TRANSLUCENT));
+		WorldRenderEvents.LAST.register(context -> UnboundEffectManager.render(context, null, null, RenderStage.LAST));
+
+		ClientTickEvents.END_CLIENT_TICK.register(UnboundEffectManager::update);
 	}
 }

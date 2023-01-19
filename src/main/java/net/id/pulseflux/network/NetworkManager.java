@@ -5,8 +5,6 @@ import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.id.pulseflux.block.transport.LogisticComponentBlock;
 import net.id.pulseflux.block.transport.PipeBlock;
-import net.id.pulseflux.network.InvalidatedComponent.Reason;
-import net.id.pulseflux.network.TransferNetwork.NetworkReconstructor;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
@@ -19,8 +17,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-import static net.id.pulseflux.PulseFlux.*;
-import static net.id.pulseflux.PulseFluxComponents.*;
+import static net.id.pulseflux.PulseFlux.LOG;
+import static net.id.pulseflux.PulseFluxComponents.NETWORK_MANAGER_KEY;
 import static net.minecraft.client.render.WorldRenderer.DIRECTIONS;
 
 public class NetworkManager implements AutoSyncedComponent, ServerTickingComponent {

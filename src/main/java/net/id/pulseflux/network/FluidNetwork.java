@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleVariantStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.id.pulseflux.block.transport.FluidPipeBlock;
 import net.id.pulseflux.block.transport.FluidPipeBlockEntity;
+import net.id.pulseflux.systems.PressureHolder;
 import net.id.pulseflux.util.FluidTextHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
@@ -15,10 +16,11 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class FluidNetwork extends TransferNetwork<FluidNetwork> {
+public class FluidNetwork extends TransferNetwork<FluidNetwork> implements PressureHolder {
 
     public final NetworkTank internalTank = new NetworkTank();
     protected long pressure;
@@ -58,6 +60,11 @@ public class FluidNetwork extends TransferNetwork<FluidNetwork> {
         }
 
         pressure = Math.round((Math.pow(dropsPastThreshold / FluidConstants.BUCKET, 1.75) * 20));
+    }
+
+    @Override
+    public long queryPressure() {
+        return pressure;
     }
 
     @Override

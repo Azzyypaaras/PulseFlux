@@ -55,7 +55,7 @@ public class PulseFluxBlocks {
 
     public static final ReservoirBlock RESERVOIR = add("reservoir", new ReservoirBlock(FabricBlockSettings.copyOf(Blocks.ANDESITE)), cutoutRenderLayer);
 
-    public static final BasinBlock STONE_BASIN = add("stone_basin", new BasinBlock(FabricBlockSettings.copyOf(Blocks.ANDESITE)), cutoutRenderLayer, selfDrop, generateBasinAssets, generateLocale("Tempered Stone Basin"));
+    public static final BasinBlock STONE_BASIN = add("stone_basin", new BasinBlock(FabricBlockSettings.copyOf(Blocks.ANDESITE)), cutoutRenderLayer, selfDrop, generateBasinAssets, generateLocale("Stone Basin"));
 
 
 
