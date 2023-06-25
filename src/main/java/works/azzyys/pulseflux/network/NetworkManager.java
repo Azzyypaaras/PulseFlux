@@ -1,8 +1,11 @@
 package works.azzyys.pulseflux.network;
 
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 import works.azzyys.pulseflux.block.transport.LogisticComponentBlock;
 import works.azzyys.pulseflux.block.transport.PipeBlock;
 import net.minecraft.block.Block;
@@ -21,10 +24,11 @@ import java.util.*;
 
 import static net.minecraft.client.render.WorldRenderer.DIRECTIONS;
 
-public class NetworkManager implements AutoSyncedComponent, ServerTickingComponent {
+public class NetworkManager implements AutoSyncedComponent, CommonTickingComponent {
 
     public final World world;
     public final Object2ObjectOpenHashMap<UUID, TransferNetwork<?>> managedNetworks = new Object2ObjectOpenHashMap<>(32);
+    private boolean hardSyncScheduled = false;
 
     public NetworkManager(World world) {
         this.world = world;
@@ -41,8 +45,9 @@ public class NetworkManager implements AutoSyncedComponent, ServerTickingCompone
     }
 
     @Override
-    public void serverTick() {
+    public void tick() {
         var managed = managedNetworks.clone();
+        boolean shouldSync = false;
 
         for (TransferNetwork<?> network : managed.values()) {
             if(!network.isComponentless()) {
@@ -51,6 +56,8 @@ public class NetworkManager implements AutoSyncedComponent, ServerTickingCompone
             else if(network.removeIfEmpty()) {
                 managedNetworks.remove(network.networkId);
                 network.postRemove();
+                shouldSync = true;
+                hardSyncScheduled = true;
                 continue;
             }
 
@@ -126,8 +133,13 @@ public class NetworkManager implements AutoSyncedComponent, ServerTickingCompone
                 }
 
                 network.processDescendants(newNetworks, this);
+                shouldSync = true;
+                hardSyncScheduled = true;
             }
         }
+
+        if (world.getTime() % 20 == 0 || shouldSync)
+            sync(world);
     }
 
     public <T extends TransferNetwork<T>> Optional<T> tryFetchNetwork(UUID networkId) {
@@ -185,6 +197,8 @@ public class NetworkManager implements AutoSyncedComponent, ServerTickingCompone
                 adjNetworks.stream().filter(network -> network != survivor).forEach(network -> network.yieldTo(survivor, this));
                 survivor.appendComponent(pos);
             }
+            hardSyncScheduled = true;
+            sync(world);
             return survivor;
         }
 
@@ -195,16 +209,56 @@ public class NetworkManager implements AutoSyncedComponent, ServerTickingCompone
             PulseFlux.LOG.info("Created new Transfer Network at " + pos);
         }
         network.appendComponent(pos);
+
+        hardSyncScheduled = true;
+        sync(world);
+
         return network;
     }
 
     @Override
     public void readFromNbt(NbtCompound tag) {
-        if(world.isClient())
-            return;
+        boolean synchronizing = tag.contains("hardSync");
+        boolean hardSync = tag.getBoolean("hardSync");
 
+        if (synchronizing) {
+            applySynchronization(tag, hardSync);
+        }
+        else if(!world.isClient()) {
+            load(tag, true, true);
+        }
+    }
+
+    public void applySynchronization(NbtCompound tag, boolean hard) {
         int savedNetworks = tag.getInt("size");
 
+        if (hard) {
+            load(tag, false, false);
+        }
+        else {
+            for (int i = 0; i < savedNetworks; i++) {
+                var id = tag.getUuid("id_" + i);
+                var reconstructor = Reconstructors.getReconstructor(Identifier.tryParse(tag.getString("reconstructor_" + i)));
+                var networkData = tag.getCompound("networkData_" + i);
+                var network = managedNetworks.get(id);
+                if (network != null) {
+                    network.softSync(networkData);
+                }
+                else {
+                    TransferNetwork<?> newNetwork = reconstructor.assemble(world, id, tag.getCompound("networkData_" + i));
+                    if (network.getConnectedComponents() > 0)
+                        managedNetworks.put(id, newNetwork);
+                }
+            }
+        }
+
+        hardSyncScheduled = false;
+    }
+
+    public void load(NbtCompound tag, boolean log, boolean sync) {
+        int savedNetworks = tag.getInt("size");
+
+        managedNetworks.clear();
         for (int i = 0; i < savedNetworks; i++) {
             var id = tag.getUuid("id_" + i);
             var reconstructor = Reconstructors.getReconstructor(Identifier.tryParse(tag.getString("reconstructor_" + i)));
@@ -212,19 +266,27 @@ public class NetworkManager implements AutoSyncedComponent, ServerTickingCompone
             TransferNetwork<?> network = reconstructor.assemble(world, id, tag.getCompound("networkData_" + i));
 
             if(network.getConnectedComponents() < 1 && network.removeIfEmpty()) {
-                PulseFlux.LOG.error("Network " + network.networkId.toString() + " is empty, skipping!");
+                if (log)
+                    PulseFlux.LOG.info("Empty network found - " + network + " - Skipping!");
                 continue;
             }
 
             managedNetworks.put(network.networkId, network);
-            PulseFlux.LOG.info("Network loaded: " + network);
+            if (log)
+                PulseFlux.LOG.info("Network loaded: " + network);
         }
 
-        sync(world);
+        if (sync)
+            sync(world);
     }
 
     @Override
     public void writeToNbt(NbtCompound tag) {
+        boolean softSyncWrite = false;
+        if (tag.contains("hardSync") && !tag.getBoolean("hardSync")) {
+            softSyncWrite = true;
+        }
+
         List<UUID> uuids = managedNetworks.keySet().stream().toList();
         tag.putInt("size", uuids.size());
 
@@ -234,8 +296,19 @@ public class NetworkManager implements AutoSyncedComponent, ServerTickingCompone
             var network = managedNetworks.get(networkId);
 
             tag.putUuid("id_" + i, networkId);
-            tag.put("networkData_" + i, network.save(new NbtCompound()));
+            tag.put("networkData_" + i, network.save(new NbtCompound(), softSyncWrite));
             tag.putString("reconstructor_" + i, Reconstructors.getId(network.getReconstructor()).toString());
         }
+    }
+
+    @Override
+    public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
+        NbtCompound tag = new NbtCompound();
+        tag.putBoolean("hardSync", hardSyncScheduled);
+        this.writeToNbt(tag);
+        buf.writeNbt(tag);
+
+        if (hardSyncScheduled)
+            hardSyncScheduled = false;
     }
 }

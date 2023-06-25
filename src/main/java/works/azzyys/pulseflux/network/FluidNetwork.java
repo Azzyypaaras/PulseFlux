@@ -212,12 +212,21 @@ public class FluidNetwork extends TransferNetwork<FluidNetwork> implements Press
     }
 
     @Override
-    public NbtCompound save(NbtCompound nbt) {
+    public NbtCompound save(NbtCompound nbt, boolean soft) {
         nbt.put("fluidVariant", getFluid().toNbt());
         nbt.putLong("droplets", getDroplets());
         nbt.putLong("pressure", pressure);
         nbt.putLong("volumeThreshold", volumeThreshold);
-        return super.save(nbt);
+        return super.save(nbt, soft);
+    }
+
+    @Override
+    public void softSync(NbtCompound nbt) {
+        super.softSync(nbt);
+        internalTank.variant = FluidVariant.fromNbt(nbt.getCompound("fluidVariant"));
+        internalTank.amount = nbt.getLong("droplets");
+        pressure = nbt.getLong("pressure");
+        volumeThreshold = nbt.getLong("volumeThreshold");
     }
 
     public class NetworkTank extends SingleVariantStorage<FluidVariant> {

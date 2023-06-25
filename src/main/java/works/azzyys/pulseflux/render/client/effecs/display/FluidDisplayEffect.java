@@ -30,7 +30,7 @@ public class FluidDisplayEffect extends UnboundEffect {
     private static final Identifier EDGES = PulseFlux.locate("textures/ufs/network_displays/fluid_iui_edges.png");
     private static final Identifier OVERLAY = PulseFlux.locate("textures/ufs/network_displays/fluid_iui_overlay.png");
     private final UUID networkId;
-    private final Optional<FluidNetwork> network = Optional.empty();
+    private Optional<FluidNetwork> network = Optional.empty();
     private final Vector3f pos;
     private short deathTicks = 16;
     private boolean finalizing;
@@ -55,8 +55,23 @@ public class FluidDisplayEffect extends UnboundEffect {
         if (age > maxAge())
             finalizing = true;
 
+        var manager = NetworkManager.getNetworkManager(world);
+
+        if (finalizing)
+            return;
+
         if (network.isEmpty())
-            NetworkManager.getNetworkManager(world).tryFetchNetwork(networkId);
+            network = manager.tryFetchNetwork(networkId);
+
+        if (network.isPresent()) {
+            if (!manager.managedNetworks.containsKey(network.get().networkId)) {
+                requestRemoval();
+                network = Optional.empty();
+            }
+            else {
+                network = manager.tryFetchNetwork(networkId);
+            }
+        }
     }
 
     @Override
@@ -137,26 +152,26 @@ public class FluidDisplayEffect extends UnboundEffect {
         RenderSystem.disableBlend();
         RenderSystem.disableDepthTest();
 
-        matrices.translate(0, 1, 0.01);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotation((float) (Math.PI)));
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotation((float) (Math.PI)));
-        matrices.scale(0.01334F, 0.01334F, 1);
-
         // The actual UI
-        //MinecraftClient.getInstance().textRenderer.draw(matrices, "balls", 1, 1, 0xFFFFFF);
 
-        var name = "NO CONNECTION";
-        var type = ".......";
-        if (network.isPresent()) {
-            name = network.get().tryGetName().orElse("unnamed");
-            type = "fluid network";
-        }
+       if (alphaMult > 0.5) {
+           matrices.translate(0, 1, 0.01);
+           matrices.multiply(RotationAxis.POSITIVE_Y.rotation((float) (Math.PI)));
+           matrices.multiply(RotationAxis.POSITIVE_Z.rotation((float) (Math.PI)));
+           matrices.scale(0.01334F, 0.01334F, 1);
 
-        MinecraftClient.getInstance().textRenderer.draw(name, 16, 11, 0xFFFFFF, false, positions, ctx.consumers(), false, 0, light);
+           var name = "NO CONNECTION";
+           var type = ".......";
+           if (network.isPresent()) {
+               name = network.get().tryGetName().orElse("unnamed");
+               type = "fluid network";
+           }
+           MinecraftClient.getInstance().textRenderer.draw(name, 16, 12, 0xFFFFFF, false, positions, ctx.consumers(), false, 0, light);
 
-        matrices.scale(0.5F, 0.5F, 1);
+           matrices.scale(0.5F, 0.5F, 1);
 
-        MinecraftClient.getInstance().textRenderer.draw(type, 32, 40, 0xFFFFFF, false, positions, ctx.consumers(), false, 0, light);
+           MinecraftClient.getInstance().textRenderer.draw(type, 32, 43, 0xFFFFFF, false, positions, ctx.consumers(), false, 0, light);
+       }
 
 
         matrices.pop();

@@ -40,7 +40,7 @@ SOFTWARE.
 === IN REGARDS TO CONTRIBUTORS ===
 
 Any rights held to contributed code by the contributing parties are relinquished to the owner of the software;
-any code contributed to this modification by said parties is, hereby, completely and implicitly
+any code contributed to this modification by said parties is, hereby, completely and permanently
 licensed under the MIT license.
 
 Any external parties contributing assets unto the mod may retain full rights to said assets, but by
@@ -54,6 +54,6 @@ of the licensed software.
 
 - Assets: any part of the software that is not source code - Eg. Models, Textures, Literature, etc.
 
-- Mod / Modification: a form of software meant to modify or enhance the a video game.
+- Mod / Modification: a form of software meant to modify or enhance a video game.
 
 - Addon: a mod meant to modify or enhance another, separate mod.

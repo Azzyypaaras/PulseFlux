@@ -263,9 +263,10 @@ public abstract class TransferNetwork<T extends TransferNetwork<T>> {
 
     abstract NetworkReconstructor<T> getReconstructor();
 
-    public NbtCompound save(NbtCompound nbt) {
+    public NbtCompound save(NbtCompound nbt, boolean soft) {
         nbt.putUuid("networkId", networkId);
         name.ifPresent(str -> nbt.putString("name", str));
+
         nbt.putLongArray("components", components.stream().mapToLong(BlockPos::asLong).toArray());
 
         var invalidPositions = invalidComponents.stream().map(InvalidatedComponent::component);
@@ -276,6 +277,11 @@ public abstract class TransferNetwork<T extends TransferNetwork<T>> {
 
         nbt.putBoolean("revalidating", revalidationCached);
         return nbt;
+    }
+
+    public void softSync(NbtCompound nbt) {
+        components.clear();
+        components.addAll(Arrays.stream(nbt.getLongArray("components")).mapToObj(BlockPos::fromLong).toList());
     }
 
     public abstract List<Text> getNetworkInfo();
@@ -455,7 +461,7 @@ public abstract class TransferNetwork<T extends TransferNetwork<T>> {
         randomAffixes.add(new Pair<>(0.15F, " Old Blood"));
         randomAffixes.add(new Pair<>(0.1F, " of the vile Jabberwocky"));
         randomAffixes.add(new Pair<>(0.1F, " o' you don't have the right, therefore you don't have the right o' you don't have the right"));
-        randomAffixes.add(new Pair<>(0.05F, " by Azazelthedemonlord"));
+        randomAffixes.add(new Pair<>(0.05F, " by Azzyypaaras"));
 
 
         people = new ArrayList<>();
