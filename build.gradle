@@ -11,10 +11,8 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
-	maven {
-		name = "TerraformersMC"
-		url = "https://maven.terraformersmc.com/releases/"
-	}
+	mavenCentral()
+	maven { url "https://maven.terraformersmc.com" }
 	maven {
 		url = "https://maven.shedaniel.me/"
 	}
@@ -31,12 +29,10 @@ repositories {
 		url = "https://ladysnake.jfrog.io/artifactory/mods"
 	}
 	maven {
-		url 'https://storage.googleapis.com/devan-maven/'
+		url = uri("https://ueaj.dev/maven")
 	}
 	maven { url "https://maven.architectury.dev/" }
-	maven {
-		url = "https://jitpack.io"
-	}
+	maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -59,7 +55,7 @@ dependencies {
 	//modImplementation("io.github.astrarre:astrarre-gui-v0-fabric:${project.astrarre_gui_version}")
 
 	// Dev env only
-	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+	//modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 	modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
 	//modApi "dev.architectury:architectury-fabric:${project.architectury_version}"
 }

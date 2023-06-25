@@ -4,29 +4,28 @@
   "version": "${version}",
 
   "name": "Pulse Flux",
-  "description": "TODO",
+  "description": "A tech mod about complex automation and intricate logistics - be not deceived. There is no pulse in this flux, only ideas stolen from Factorio's SE!",
   "authors": [
-    "Immortal Devs - parent organization",
-    "Azazelthedemonlord - lead designer"
+    "Azzyypaaras - a most unkind and arrogant woman"
   ],
   "contact": {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/aether",
     "sources": "https://github.com/devs-immortal/PulseFlux",
     "issues": "https://github.com/devs-immortal/PulseFlux/issues"
   },
-  "license": "MIT",
+  "license": "ARR ~ code is MIT",
   "icon": "assets/pulseflux/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.id.pulseflux.PulseFlux"
+      "works.azzyys.pulseflux.PulseFlux"
     ],
     "client": [
-      "net.id.pulseflux.PulseFlux"
+      "works.azzyys.pulseflux.PulseFlux"
     ],
     "cardinal-components": [
-      "net.id.pulseflux.PulseFluxComponents"
+      "works.azzyys.pulseflux.PulseFluxComponents"
     ]
   },
   "mixins": [
