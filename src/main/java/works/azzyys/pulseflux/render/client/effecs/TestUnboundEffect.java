@@ -10,11 +10,9 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RotationAxis;
 import net.minecraft.world.LightType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 
 import java.util.UUID;
 
@@ -22,39 +20,28 @@ public class TestUnboundEffect extends UnboundEffect {
 
     public static final Identifier TEST = PulseFlux.locate("test");
     public static final Identifier TEXTURE = PulseFlux.locate("textures/bitchless.png");
+    private static final BlockPos POSITION = new BlockPos(118, 69, -19);
 
     public TestUnboundEffect() {
         super(UUID.randomUUID());
     }
 
     @Override
-    void render(@NotNull WorldRenderContext ctx, @Nullable HitResult hit, @Nullable WorldRenderContext.BlockOutlineContext outline) {
-        var vector = new Vector3f(118.5F, 69.5F, -18.5F);
-        var camera = ctx.camera().getPos();
+    public void render(@NotNull WorldRenderContext ctx, @Nullable HitResult hit, @Nullable WorldRenderContext.BlockOutlineContext outline) {
+        var pos = POSITION;
         var consumers = ctx.consumers();
         var world = ctx.world();
-        var pos = new BlockPos(vector.x, vector.y, vector.z);
 
-        vector.sub(camera.toVector3f());
-
-        var overlay = OverlayTexture.DEFAULT_UV;
-        var light = LightmapTextureManager.pack(world.getLightLevel(LightType.BLOCK, pos), world.getLightLevel(LightType.SKY, pos));
-
-        var r = vector.length();
-        var orientationX = Math.acos(vector.z / Math.sqrt(vector.z * vector.z + vector.x * vector.x)) * (vector.x < 0 ? -1 : 1);
-        var orientationY = Math.acos(vector.y / r);
-
-        if (consumers == null)
+        if (consumers == null || world == null)
             return;
 
+        var vector = setUpForCamera(pos.toCenterPos().toVector3f(), ctx.camera());
+
         var matrices = ctx.matrixStack();
-
         matrices.push();
-
         matrices.translate(vector.x, vector.y, vector.z);
 
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotation((float) orientationX));
-        matrices.multiply(RotationAxis.POSITIVE_X.rotation((float) (orientationY - Math.PI / 2)));
+        rotateToVectorOrientation(vector, matrices);
 
         matrices.scale(5, 5, 5);
         matrices.translate(-0.5F, -0.5F, 0);
@@ -65,13 +52,15 @@ public class TestUnboundEffect extends UnboundEffect {
         var positions = matrix.getPositionMatrix();
         var normals = matrix.getNormalMatrix();
 
+        var overlay = OverlayTexture.DEFAULT_UV;
+        var light = LightmapTextureManager.pack(world.getLightLevel(LightType.BLOCK, pos), world.getLightLevel(LightType.SKY, pos));
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
 
-        consumer.vertex(positions, 0, 0, 0).color(1f, 1f, 1f, 1f).texture(1, 1).overlay(overlay).light(light).normal(normals, 0, 0, 0).next();
-        consumer.vertex(positions, 1, 0, 0).color(1f, 1f, 1f, 1f).texture(0, 1).overlay(overlay).light(light).normal(normals, 1, 0, 0).next();
-        consumer.vertex(positions, 1, 1, 0).color(1f, 1f, 1f, 1f).texture(0, 0).overlay(overlay).light(light).normal(normals, 1, 1, 0).next();
-        consumer.vertex(positions, 0, 1, 0).color(1f, 1f, 1f, 1f).texture(1, 0).overlay(overlay).light(light).normal(normals, 0, 1, 0).next();
+        consumer.vertex(positions, 0, 0, 0).color(1f, 1f, 1f, 1f).texture(0, 1).overlay(overlay).light(light).normal(normals, 0, 0, 1).next();
+        consumer.vertex(positions, 1, 0, 0).color(1f, 1f, 1f, 1f).texture(1, 1).overlay(overlay).light(light).normal(normals, 1, 0, 1).next();
+        consumer.vertex(positions, 1, 1, 0).color(1f, 1f, 1f, 1f).texture(1, 0).overlay(overlay).light(light).normal(normals, 1, 1, 1).next();
+        consumer.vertex(positions, 0, 1, 0).color(1f, 1f, 1f, 1f).texture(0, 0).overlay(overlay).light(light).normal(normals, 0, 1, 1).next();
 
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
@@ -85,12 +74,17 @@ public class TestUnboundEffect extends UnboundEffect {
     }
 
     @Override
-    Identifier getName() {
+    public boolean requestRemoval() {
+        return false;
+    }
+
+    @Override
+    public Identifier getName() {
         return TEST;
     }
 
     @Override
-    Identifier getCategory() {
+    public Identifier getCategory() {
         return PulseFluxEffectIdentifiers.TESTING;
     }
 }

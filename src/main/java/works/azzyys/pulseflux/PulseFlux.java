@@ -8,6 +8,8 @@ import works.azzyys.pulseflux.arrp.PulseFluxRecipes;
 import works.azzyys.pulseflux.arrp.PulseFluxResources;
 import works.azzyys.pulseflux.block.PulseFluxBlockEntities;
 import works.azzyys.pulseflux.block.PulseFluxBlocks;
+import works.azzyys.pulseflux.packets.PulseFluxClientPackets;
+import works.azzyys.pulseflux.packets.PulseFluxServerPackets;
 import works.azzyys.pulseflux.render.client.PulseFluxRenderers;
 import works.azzyys.pulseflux.render.client.effecs.UnboundEffectManager;
 import works.azzyys.pulseflux.item.PulseFluxItemGroups;
@@ -41,16 +43,17 @@ public class PulseFlux implements ModInitializer, ClientModInitializer {
 		PulseFluxRecipes.init();
 		PulseFluxResources.init();
 		Reconstructors.register();
+
+		PulseFluxServerPackets.init();
 	}
 
 	@Override
 	@Environment(EnvType.CLIENT)
 	public void onInitializeClient() {
 		PulseFluxRenderers.init();
-
 		UnboundEffectManager.init();
-
 		PulseFluxRenderers.initUnboundEffects();
 
+		PulseFluxClientPackets.init();
 	}
 }

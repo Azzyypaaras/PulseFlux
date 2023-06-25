@@ -9,11 +9,11 @@ public class PulseFluxEffectIdentifiers {
      * Names
      */
     public static final Identifier UNNAMED = PulseFlux.locate("unnamed");
-
+    public static final Identifier FLUID_NETWORK_DISPLAY = PulseFlux.locate("fluid_network_display");
 
     /**
      * Categories
      */
-    public static final Identifier DEFAULT_CATEGORY = PulseFlux.locate("default");
+    public static final Identifier IUI_DISPLAYS = PulseFlux.locate("iui_displays");
     public static final Identifier TESTING = PulseFlux.locate("testing");
 }

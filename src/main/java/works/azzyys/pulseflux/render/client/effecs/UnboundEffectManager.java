@@ -71,7 +71,7 @@ public class UnboundEffectManager {
                     if (!effectList.getKey().equals(world) && !effect.shouldUpdateInUnloadedWorld())
                         continue;
 
-                    if (effect.isFinished()) {
+                    if (effect.isRemoved()) {
                         removed.add(effect);
                     }
                     else {
@@ -91,11 +91,11 @@ public class UnboundEffectManager {
         return effect;
     }
 
-    public Optional<UnboundEffect> getById(UUID uuid) {
+    public static Optional<UnboundEffect> getById(UUID uuid) {
         return Optional.ofNullable(EFFECTS_BY_ID.get(uuid));
     }
 
-    public List<UnboundEffect> getByName(Identifier name) {
+    public static List<UnboundEffect> getByName(Identifier name) {
         return EFFECTS_BY_ID
                 .values()
                 .stream()
@@ -103,7 +103,7 @@ public class UnboundEffectManager {
                 .toList();
     }
 
-    public List<UnboundEffect> getByCategory(Identifier category) {
+    public static List<UnboundEffect> getByCategory(Identifier category) {
         return EFFECTS_BY_ID
                 .values()
                 .stream()
@@ -111,7 +111,7 @@ public class UnboundEffectManager {
                 .toList();
     }
 
-    public static void remove(UUID uuid) {
+    public static void remove(UUID uuid, boolean immediate) {
         ACTIVE_EFFECTS.values()
                 .forEach(map -> {
 
@@ -125,11 +125,20 @@ public class UnboundEffectManager {
                             }
                         }
 
-                        list.remove(removed);
-                        EFFECTS_BY_ID.remove(uuid);
+                        if (immediate) {
+                            list.remove(removed);
+                            EFFECTS_BY_ID.remove(uuid);
+                        }
+                        else if (removed != null){
+                            removed.requestRemoval();
+                        }
 
                     }
                 });
+    }
+
+    public static void remove(UUID uuid) {
+        remove(uuid, false);
     }
 
     public RenderStage getCurrentStage() {

@@ -161,6 +161,10 @@ public abstract class TransferNetwork<T extends TransferNetwork<T>> {
         return finalName;
     }
 
+    public Optional<String> tryGetName() {
+        return name;
+    }
+
     abstract String getNetworkTitle();
 
     protected String getPrefix(Random random, RegistryEntry<Biome> biomeEntry, int y, boolean surface) {
