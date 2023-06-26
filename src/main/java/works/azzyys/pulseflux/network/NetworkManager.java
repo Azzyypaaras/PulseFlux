@@ -196,8 +196,8 @@ public class NetworkManager implements AutoSyncedComponent, CommonTickingCompone
                 survivor = adjNetworks.remove(0);
                 adjNetworks.stream().filter(network -> network != survivor).forEach(network -> network.yieldTo(survivor, this));
                 survivor.appendComponent(pos);
+                hardSyncScheduled = true;
             }
-            hardSyncScheduled = true;
             sync(world);
             return survivor;
         }
