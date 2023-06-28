@@ -32,6 +32,18 @@ public class AssetGen {
         PulseFluxResources.PACK.addBlockState(JState.state(JState.variant(JState.model(id))), block);
     }
 
+    public static void createColumnAssets(Identifier block) {
+        var id = PulseFluxResources.splicePath(block, "block");
+        PulseFluxResources.PACK.addModel(JModel.model("minecraft:block/cube_column")
+                .textures(JModel.textures().var("side", id + "_side").var("end", id + "_top")), id);
+        PulseFluxResources.PACK.addBlockState(JState.state(
+                JState.variant()
+                        .put("axis", "x", JState.model(id).x(90).y(90))
+                        .put("axis", "y", JState.model(id))
+                        .put("axis", "z", JState.model(id).x(90))
+        ), block);
+    }
+
     public static void createDiodeAssets(Identifier block) {
         var id = PulseFluxResources.splicePath(block, "block");
         var frameId = PulseFluxResources.appendPath(id, "_frame");

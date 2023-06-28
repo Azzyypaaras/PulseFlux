@@ -206,7 +206,7 @@ public class NetworkManager implements AutoSyncedComponent, CommonTickingCompone
         network.setName(network.getOrCreateName(world, pos));
         managedNetworks.put(network.networkId, network);
         if(!world.isClient()) {
-            PulseFlux.LOG.info("Created new Transfer Network at " + pos);
+            PulseFlux.LOG.debug("Created new Transfer Network at " + pos);
         }
         network.appendComponent(pos);
 
@@ -245,8 +245,8 @@ public class NetworkManager implements AutoSyncedComponent, CommonTickingCompone
                     network.softSync(networkData);
                 }
                 else {
-                    TransferNetwork<?> newNetwork = reconstructor.assemble(world, id, tag.getCompound("networkData_" + i));
-                    if (network.getConnectedComponents() > 0)
+                    TransferNetwork<?> newNetwork = reconstructor.assemble(world, id, networkData);
+                    if (newNetwork.getConnectedComponents() > 0)
                         managedNetworks.put(id, newNetwork);
                 }
             }
@@ -267,13 +267,13 @@ public class NetworkManager implements AutoSyncedComponent, CommonTickingCompone
 
             if(network.getConnectedComponents() < 1 && network.removeIfEmpty()) {
                 if (log)
-                    PulseFlux.LOG.info("Empty network found - " + network + " - Skipping!");
+                    PulseFlux.LOG.debug("Empty network found - " + network + " - Skipping!");
                 continue;
             }
 
             managedNetworks.put(network.networkId, network);
             if (log)
-                PulseFlux.LOG.info("Network loaded: " + network);
+                PulseFlux.LOG.debug("Network loaded: " + network);
         }
 
         if (sync)

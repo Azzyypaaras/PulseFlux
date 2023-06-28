@@ -46,7 +46,7 @@ public abstract class TransferNetwork<T extends TransferNetwork<T>> {
         this.invalidComponents = new ArrayList<>();
         this.components = new ArrayList<>();
 
-        PulseFlux.LOG.info("Created a new transfer network of type " + this.getClass().getCanonicalName());
+        PulseFlux.LOG.debug("Created a new transfer network of type " + this.getClass().getCanonicalName());
     }
 
     public TransferNetwork(World world, NbtCompound nbt) {

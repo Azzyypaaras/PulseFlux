@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "pulseflux:tempered_stone",
+    "pulseflux:tempered_stone_column",
+    "pulseflux:tempered_stone_bricks",
+    "pulseflux:tempered_stone_tile"
+  ]
+}

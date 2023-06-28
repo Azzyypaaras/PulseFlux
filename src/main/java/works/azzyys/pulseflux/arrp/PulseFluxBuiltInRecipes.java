@@ -4,7 +4,7 @@ import works.azzyys.pulseflux.PulseFlux;
 import net.minecraft.item.Item;
 import works.azzyys.pulseflux.item.PulseFluxItems;
 
-public class PulseFluxRecipes {
+public class PulseFluxBuiltInRecipes {
 
     public static void init() {
         generate9x("hsla_steel_block_workbench", PulseFluxItems.HSLA_STEEL_INGOT, PulseFluxItems.HSLA_STEEL_BLOCK, true);

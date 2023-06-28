@@ -80,6 +80,11 @@ public class PulseFluxItems {
 
     public static final BlockItem VARNISHED_WOOD_PLANKS = add("varnished_wood_planks", PulseFluxBlocks.VARNISHED_WOOD_PLANKS, simpleItem(), decorations, generateBlockAssets);
 
+    public static final BlockItem TEMPERED_STONE = add("tempered_stone", PulseFluxBlocks.TEMPERED_STONE, simpleItem(), decorations, generateBlockAssets);
+    public static final BlockItem TEMPERED_STONE_COLUMN = add("tempered_stone_column", PulseFluxBlocks.TEMPERED_STONE_COLUMN, simpleItem(), decorations, generateBlockAssets);
+    public static final BlockItem TEMPERED_STONE_BRICKS = add("tempered_stone_bricks", PulseFluxBlocks.TEMPERED_STONE_BRICKS, simpleItem(), decorations, generateBlockAssets);
+    public static final BlockItem TEMPERED_STONE_TILE = add("tempered_stone_tile", PulseFluxBlocks.TEMPERED_STONE_TILE, simpleItem(), decorations, generateBlockAssets);
+
 
     /**
      * 4. TOOLS

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "W",
+    "W"
+  ],
+  "key": {
+    "W": {
+      "item": "pulseflux:tempered_stone"
+    }
+  },
+  "result": {
+    "item": "pulseflux:tempered_stone_column",
+    "count": 2
+  }
+}

@@ -38,6 +38,26 @@ public class DataGen {
                 JResult.itemStack(result, count)));
     }
 
+    public static void generateSmeltingRecipe(Identifier id, Smelter smelter, Item ingredient, Item result) {
+        switch (smelter) {
+            case FURNACE -> PACK.addRecipe(id, JRecipe.smelting(
+                            JIngredient.ingredient().item(ingredient),
+                            JResult.item(result)
+                    )
+            );
+            case SMOKING -> PACK.addRecipe(id, JRecipe.smoking(
+                            JIngredient.ingredient().item(ingredient),
+                            JResult.item(result)
+                    )
+            );
+            case BLASTING -> PACK.addRecipe(id, JRecipe.blasting(
+                            JIngredient.ingredient().item(ingredient),
+                            JResult.item(result)
+                    )
+            );
+        }
+    }
+
     public static void lootSelfDrop(Identifier id) {
         PACK.addLootTable(splicePath(id, "blocks"), JLootTable.loot("minecraft:block").pool(
                 JLootTable.pool()
@@ -49,5 +69,11 @@ public class DataGen {
                         .condition(JLootTable.predicate("minecraft:survives_explosion"))
                 )
         );
+    }
+
+    public enum Smelter {
+        FURNACE,
+        SMOKING,
+        BLASTING
     }
 }

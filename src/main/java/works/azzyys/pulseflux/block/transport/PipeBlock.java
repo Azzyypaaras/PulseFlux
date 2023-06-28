@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
+import works.azzyys.pulseflux.block.base.PFBlockWithEntity;
 import works.azzyys.pulseflux.item.PulseFluxItems;
 import works.azzyys.pulseflux.network.TransferNetwork;
 import works.azzyys.pulseflux.util.BlockReference;
@@ -36,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public abstract class PipeBlock<T extends TransferNetwork<T>> extends LogisticComponentBlock<T> {
+public abstract class PipeBlock<T extends TransferNetwork<T>> extends PFBlockWithEntity implements LogisticComponentBlock<T> {
 
     public static final EnumProperty<Direction.Axis> LINEAR_AXIS = Properties.AXIS;
     public static final BooleanProperty STRAIGHT = BooleanProperty.of("straight");

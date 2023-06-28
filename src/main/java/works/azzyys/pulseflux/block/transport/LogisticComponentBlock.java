@@ -10,21 +10,17 @@ import net.minecraft.world.World;
 import java.util.Optional;
 import java.util.UUID;
 
-public abstract class LogisticComponentBlock<T extends TransferNetwork<T>> extends PFBlockWithEntity {
+public interface LogisticComponentBlock<T extends TransferNetwork<T>> {
 
-    public LogisticComponentBlock(Settings settings, boolean loggable) {
-        super(settings, loggable);
-    }
-
-    public boolean isConnectedToComponent(World world, BlockPos pos, Direction direction) {
+    default boolean isConnectedToComponent(World world, BlockPos pos, Direction direction) {
         return false;
     }
 
-    public abstract boolean isCompatibleWith(TransferNetwork<?> network);
+    boolean isCompatibleWith(TransferNetwork<?> network);
 
-    public abstract void switchNetwork(BlockPos pos, T network, NetworkManager manager);
+    void switchNetwork(BlockPos pos, T network, NetworkManager manager);
 
-    public abstract Optional<T> getParentNetwork(World world, BlockPos pos);
+    Optional<T> getParentNetwork(World world, BlockPos pos);
 
-    public abstract T createNetwork(World world, UUID id);
+    T createNetwork(World world, UUID id);
 }

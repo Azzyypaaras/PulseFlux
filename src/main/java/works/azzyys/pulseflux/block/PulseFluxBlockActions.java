@@ -71,7 +71,12 @@ class PulseFluxBlockActions {
 
     public static final Action<Block> generateDiodeAssets = (id, block) -> AssetGen.createDiodeAssets(id);
     public static final Action<Block> generateAssets = (id, block) -> AssetGen.createBlockAssets(id);
+    public static final Action<Block> generateColumnAssets = (id, block) -> AssetGen.createColumnAssets(id);
     public static final Action<Block> generatePipeAssets = (id, block) -> AssetGen.createPipeAssets(id);
+
+    /**
+     * DATA
+     */
 
     public static final Action<Block> selfDrop = (identifier, block) -> DataGen.lootSelfDrop(identifier);
 
