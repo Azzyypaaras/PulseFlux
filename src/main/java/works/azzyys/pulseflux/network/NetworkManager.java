@@ -24,7 +24,7 @@ import java.util.*;
 
 import static net.minecraft.client.render.WorldRenderer.DIRECTIONS;
 
-public class NetworkManager implements AutoSyncedComponent, CommonTickingComponent {
+public final class NetworkManager implements AutoSyncedComponent, CommonTickingComponent {
 
     public final World world;
     public final Object2ObjectOpenHashMap<UUID, TransferNetwork<?>> managedNetworks = new Object2ObjectOpenHashMap<>(32);

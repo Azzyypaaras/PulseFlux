@@ -1,4 +1,4 @@
-package works.azzyys.pulseflux.systems;
+package works.azzyys.pulseflux.systems.energy;
 
 /**
  * An object capable of storing and translating thermal energy.

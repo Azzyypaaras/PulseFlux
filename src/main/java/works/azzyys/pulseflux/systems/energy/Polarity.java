@@ -1,4 +1,4 @@
-package works.azzyys.pulseflux.systems;
+package works.azzyys.pulseflux.systems.energy;
 
 public enum Polarity {
     NEUTRAL(0xf78cff),

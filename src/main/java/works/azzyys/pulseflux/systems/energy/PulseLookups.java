@@ -1,4 +1,4 @@
-package works.azzyys.pulseflux.systems;
+package works.azzyys.pulseflux.systems.energy;
 
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.fabricmc.fabric.api.lookup.v1.item.ItemApiLookup;

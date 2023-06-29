@@ -1,4 +1,4 @@
-package works.azzyys.pulseflux.systems;
+package works.azzyys.pulseflux.systems.energy;
 
 import net.id.incubus_core.systems.MaterialProvider;
 import net.id.incubus_core.systems.Simulation;

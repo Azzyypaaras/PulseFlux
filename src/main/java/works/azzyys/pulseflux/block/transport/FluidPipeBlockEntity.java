@@ -12,7 +12,7 @@ import works.azzyys.pulseflux.block.PulseFluxBlockEntities;
 import works.azzyys.pulseflux.network.FluidNetwork;
 import works.azzyys.pulseflux.network.NetworkManager;
 import works.azzyys.pulseflux.network.TransferNetwork;
-import works.azzyys.pulseflux.systems.PressureHolder;
+import works.azzyys.pulseflux.systems.energy.PressureHolder;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;

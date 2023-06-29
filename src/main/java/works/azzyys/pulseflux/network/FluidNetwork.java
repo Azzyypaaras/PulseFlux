@@ -8,7 +8,7 @@ import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleVariantStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import works.azzyys.pulseflux.block.transport.FluidPipeBlock;
 import works.azzyys.pulseflux.block.transport.FluidPipeBlockEntity;
-import works.azzyys.pulseflux.systems.PressureHolder;
+import works.azzyys.pulseflux.systems.energy.PressureHolder;
 import works.azzyys.pulseflux.util.FluidTextHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;

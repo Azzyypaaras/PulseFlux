@@ -1,11 +1,11 @@
 package works.azzyys.pulseflux.util;
 
 import com.google.common.collect.ImmutableList;
-import works.azzyys.pulseflux.systems.PulseIo;
+import works.azzyys.pulseflux.systems.energy.PulseIo;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import works.azzyys.pulseflux.systems.PulseLookups;
+import works.azzyys.pulseflux.systems.energy.PulseLookups;
 
 import java.util.Arrays;
 import java.util.List;

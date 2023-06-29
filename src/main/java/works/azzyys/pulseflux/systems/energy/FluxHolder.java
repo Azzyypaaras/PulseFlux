@@ -1,4 +1,4 @@
-package works.azzyys.pulseflux.systems;
+package works.azzyys.pulseflux.systems.energy;
 
 import net.minecraft.util.math.MathHelper;
 

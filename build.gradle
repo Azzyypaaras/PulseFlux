@@ -52,6 +52,8 @@ dependencies {
 	// highly importante!
 	modImplementation("net.devtech:arrp:${project.arrp_version}")
 	modImplementation "io.wispforest:owo-lib:${project.owo_version}"
+	implementation("com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}")
+	annotationProcessor("com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}")
 	//modImplementation("io.github.astrarre:astrarre-gui-v0-fabric:${project.astrarre_gui_version}")
 
 	// Dev env only

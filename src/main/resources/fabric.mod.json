@@ -43,7 +43,8 @@
   },
   "custom": {
     "cardinal-components": [
-      "pulseflux:network_manager"
+      "pulseflux:network_manager",
+      "pulseflux:automata_manager"
     ],
     "modmenu": {
       "links": {

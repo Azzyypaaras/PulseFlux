@@ -6,7 +6,8 @@
   "mixins": [
     "arrp.EWhenMixin",
     "arrp.JWhenMixin",
-    "world.WorldChunkMixin"
+    "world.WorldChunkMixin",
+    "world.WorldMixin"
   ],
   "client": [
   ],

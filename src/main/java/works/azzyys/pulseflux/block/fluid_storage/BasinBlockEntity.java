@@ -5,7 +5,7 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.*;
 import net.id.incubus_core.util.RegistryQueue;
 import works.azzyys.pulseflux.block.PulseFluxBlockEntities;
 import works.azzyys.pulseflux.block.base.PFTickingBE;
-import works.azzyys.pulseflux.systems.PressureHolder;
+import works.azzyys.pulseflux.systems.energy.PressureHolder;
 import works.azzyys.pulseflux.util.transfer.SingleFluidStorage;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;

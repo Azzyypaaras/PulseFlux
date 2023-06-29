@@ -1,7 +1,7 @@
 package works.azzyys.pulseflux.mixin.world;
 
-import works.azzyys.pulseflux.systems.IoProvider;
-import works.azzyys.pulseflux.systems.Polarity;
+import works.azzyys.pulseflux.systems.energy.IoProvider;
+import works.azzyys.pulseflux.systems.energy.Polarity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;

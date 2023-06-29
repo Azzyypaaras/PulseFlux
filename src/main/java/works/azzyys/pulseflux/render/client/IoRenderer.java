@@ -1,6 +1,6 @@
 package works.azzyys.pulseflux.render.client;
 
-import works.azzyys.pulseflux.systems.IoProvider;
+import works.azzyys.pulseflux.systems.energy.IoProvider;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -11,7 +11,7 @@ import org.joml.Vector3f;
 
 import static net.id.incubus_core.render.RenderHelper.directionalMatrixMultiply;
 import static net.id.incubus_core.render.RenderHelper.drawEmissiveCube;
-import static works.azzyys.pulseflux.systems.IoProvider.Type.PULSE;
+import static works.azzyys.pulseflux.systems.energy.IoProvider.Type.PULSE;
 
 public class IoRenderer<E extends BlockEntity & IoProvider> implements BlockEntityRenderer<E> {
 

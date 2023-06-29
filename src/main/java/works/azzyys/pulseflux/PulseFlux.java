@@ -6,8 +6,10 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.api.ModInitializer;
 import works.azzyys.pulseflux.arrp.PulseFluxBuiltInRecipes;
 import works.azzyys.pulseflux.arrp.PulseFluxResources;
+import works.azzyys.pulseflux.automata.AutomataManager;
 import works.azzyys.pulseflux.block.PulseFluxBlockEntities;
 import works.azzyys.pulseflux.block.PulseFluxBlocks;
+import works.azzyys.pulseflux.event.BlockSwapCallback;
 import works.azzyys.pulseflux.packets.PulseFluxClientPackets;
 import works.azzyys.pulseflux.packets.PulseFluxServerPackets;
 import works.azzyys.pulseflux.render.client.PulseFluxRenderers;
@@ -45,6 +47,8 @@ public class PulseFlux implements ModInitializer, ClientModInitializer {
 		Reconstructors.register();
 
 		PulseFluxServerPackets.init();
+
+		BlockSwapCallback.EVENT.register(((world, pos, oldState, newState, flags) -> AutomataManager.get(world).processBlockSwap(world, pos, oldState, newState)));
 	}
 
 	@Override
