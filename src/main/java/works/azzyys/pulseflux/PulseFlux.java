@@ -7,6 +7,7 @@ import net.fabricmc.api.ModInitializer;
 import works.azzyys.pulseflux.arrp.PulseFluxBuiltInRecipes;
 import works.azzyys.pulseflux.arrp.PulseFluxResources;
 import works.azzyys.pulseflux.automata.AutomataManager;
+import works.azzyys.pulseflux.automata.PulseFluxAutomata;
 import works.azzyys.pulseflux.block.PulseFluxBlockEntities;
 import works.azzyys.pulseflux.block.PulseFluxBlocks;
 import works.azzyys.pulseflux.event.BlockSwapCallback;
@@ -44,6 +45,7 @@ public class PulseFlux implements ModInitializer, ClientModInitializer {
 		PulseFluxBlockEntities.postInit();
 		PulseFluxBuiltInRecipes.init();
 		PulseFluxResources.init();
+		PulseFluxAutomata.init();
 		Reconstructors.register();
 
 		PulseFluxServerPackets.init();

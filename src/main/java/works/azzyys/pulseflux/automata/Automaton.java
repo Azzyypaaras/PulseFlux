@@ -1,21 +1,18 @@
 package works.azzyys.pulseflux.automata;
 
+import net.minecraft.world.World;
+
 public abstract class Automaton {
 
-    protected boolean configured = false;
+    protected final World world;
+
+    public Automaton(World world) {
+        this.world = world;
+    }
 
     abstract void tick();
 
-    abstract boolean canTick();
-
-    /**
-     * CALL ME
-     */
-    protected void markConfigured() {
-        configured = true;
-    }
-
-    public boolean hasBeenConfigured() {
-        return configured;
+    public boolean canTick() {
+        return true;
     }
 }
